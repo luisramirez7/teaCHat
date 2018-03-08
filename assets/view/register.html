@@ -1,0 +1,66 @@
+<html>
+<head>
+	<title>IO Chat</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+	<div class="container">
+		<div id="header">
+			teaCHat
+			<hr> 
+		</div>
+		<div id="registerArea" class="row">
+			<div class="col-md-12 text-center">
+				<form action="/submit" id="registerForm" method="post">
+					<br />
+					<div class="row">
+            			<div class="col-lg-4 col-lg-offset-4">
+               				 <input type="text" class="form-control" name="email" id="email" placeholder="Email" />
+           				 </div>
+       				 </div>
+       				 <br />
+       				 <div class="row">
+            			<div class="col-lg-4 col-lg-offset-4">
+               				 <input type="text" class="form-control" name="username" id="username" placeholder="Username" />
+           				 </div>
+       				 </div>
+       				 <br />
+       				 <div class="row">
+            			<div class="col-lg-4 col-lg-offset-4">
+               				 <input type="text" class="form-control" name="password" id="password" placeholder="Password" />
+           				 </div>
+       				 </div>
+       				 <br />
+       				 <div class="row">
+            			<div class="col-lg-2 col-lg-offset-5">	
+       				 		User type:
+               				<select class="form-control mr-sm-2" name="userType" id = "userType">
+               					<option value="professor">Professor</option>
+               					<option value="student">Student</option>
+               				</select>
+           				 </div>
+       				 </div>
+       				 <br />
+       				 <div class="row">
+            			<div class="col-lg-4 col-lg-offset-4">
+               				 <input type="text" class="form-control" name="authenticationId" id="authenticationId" placeholder="Authentication ID" />
+           				 </div>
+       				 </div>
+       				 <br />
+       				  <div class="row">
+            			<div class="col-lg-4 col-lg-offset-6">
+               				<input type="submit" class="btn btn-primary" value="SIGN UP" />
+               				<br /><br />
+           				</div>
+       				</div>
+       				<br /><br />
+				</form>
+				Existing User? <a href="/login">Log in here!</a>
+			</div>	
+		</div>
+	</div>
+</body>
+</html>
