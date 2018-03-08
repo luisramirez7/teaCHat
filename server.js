@@ -1,10 +1,15 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+var validateUser = require(__dirname + '/validateuser.js');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(express.static(__dirname + '/assets'));
+
 users = [];
 connections = [];
-
 
 var mysql = require('mysql');
 
@@ -23,9 +28,43 @@ con.connect(function(err) {
 server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
-
 app.get('/chat', function(req, res){
-	res.sendFile(__dirname + '/index.html');
+	res.sendFile(__dirname + '/assets/view/chat.html');
+});
+
+app.get('/login', function(req, res){
+	res.sendFile(__dirname + '/assets/view/login.html');
+});
+
+app.get('/register', function(req, res){
+	res.sendFile(__dirname + '/assets/view/register.html');
+});
+
+app.post('/submit', function(req, res){
+	var email = req.body.email;
+	var username = req.body.username;
+	var password = req.body.password;
+	var userType = req.body.userType;
+	var type = 0;
+	var authenticationId = req.body.authenticationId;
+	var verificationNumber = '1234';
+	var flag = true;
+
+	if(userType == 'professor' && authenticationId == verificationNumber){
+		type = 1;
+	} else if(userType == "professor" && authenticationId != verificationNumber){
+		console.log("Registration failed");
+		res.sendFile(__dirname + '/assets/view/register.html');
+		flag = false;
+	}
+
+	if(flag){
+		con.query('INSERT INTO User (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
+			if (error) throw error;
+			console.log("Registration successful!");
+			res.sendFile(__dirname + '/assets/view/login.html');
+		});
+	}
 });
 
 io.sockets.on('connection', function(socket){
@@ -48,17 +87,16 @@ io.sockets.on('connection', function(socket){
 
 	// new user
 	 socket.on('new user', function(data, callback){
-		//var isValid = validUser(data.username, data.password);
 		
 		var isValid = 0;
 		socket.username = data.username;
 		socket.password = data.password;
-		validUser(socket.username, socket.password, result => {
+		validateUser.validUser(socket.username, socket.password, con, result => {
 			var isValid = result;
 			console.log("VALID2 : " + isValid);
 			if(isValid === 1){
 			console.log("YES");
-			callback(true);
+			callback('/chat');
 			console.log(data.username);
 			console.log(data.password);		
 			users.push(socket.username);
@@ -67,16 +105,14 @@ io.sockets.on('connection', function(socket){
 			console.log("NO");
 			callback(false);
 		}
-		}); //WHY RETURN UNDEFINEDDDD? IS IT CONCURRENT??
-
-			//console.log("VALID1 : " + validUser(data.username, data.password));
-	
+		}); 
 	})
 
 	function updateUsernames(){
 		io.sockets.emit('get users', users);
 	}
 
+/*
 	const validUser = (username, password, callback) => {
 	console.log(username + " " + password);
 	var code = 0;
@@ -102,4 +138,5 @@ io.sockets.on('connection', function(socket){
 	});
 	
 }
+*/
 });
