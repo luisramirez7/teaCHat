@@ -29,15 +29,15 @@ server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
 app.get('/chat', function(req, res){
-	res.sendFile(__dirname + '/assets/view/chat.html');
+	res.sendFile(__dirname + '/view/chat.html');
 });
 
 app.get('/login', function(req, res){
-	res.sendFile(__dirname + '/assets/view/login.html');
+	res.sendFile(__dirname + '/view/login.html');
 });
 
 app.get('/register', function(req, res){
-	res.sendFile(__dirname + '/assets/view/register.html');
+	res.sendFile(__dirname + '/view/register.html');
 });
 
 app.post('/submit', function(req, res){
@@ -79,7 +79,7 @@ io.sockets.on('connection', function(socket){
 	connections.splice(connections.indexOf(socket), 1);
 	console.log('Disconnected : %s sockets connected', connections.length);
 	});
-	
+
 	//Send Message
 	socket.on('send message', function(data){
 		io.sockets.emit('new message', {msg: data, user: socket.username});
@@ -87,7 +87,7 @@ io.sockets.on('connection', function(socket){
 
 	// new user
 	 socket.on('new user', function(data, callback){
-		
+
 		var isValid = 0;
 		socket.username = data.username;
 		socket.password = data.password;
@@ -98,14 +98,14 @@ io.sockets.on('connection', function(socket){
 			console.log("YES");
 			callback('/chat');
 			console.log(data.username);
-			console.log(data.password);		
+			console.log(data.password);
 			users.push(socket.username);
 			updateUsernames();
 		} else {
 			console.log("NO");
 			callback(false);
 		}
-		}); 
+		});
 	})
 
 	function updateUsernames(){
@@ -132,11 +132,11 @@ io.sockets.on('connection', function(socket){
 				}
 			} else {
 				callback(2);
-				
+
 			}
-		}	
+		}
 	});
-	
+
 }
 */
 });

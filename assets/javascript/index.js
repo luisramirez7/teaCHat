@@ -1,5 +1,5 @@
 $(function(){
-			var socket = io.connect();	
+			var socket = io.connect();
 			var $messageForm = $('#messageForm');
 			var $message = $('#message');
 			var $chat = $('#chat');
@@ -17,7 +17,7 @@ $(function(){
 			});
 
 			socket.on('new message', function(data){
-				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');	
+				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
 			});
 
 			$userForm.submit(function(e){
@@ -25,15 +25,17 @@ $(function(){
 					socket.emit('new user', {username:$username.val(), password:$password.val()}, function(data){
 					console.log(data);
 						if(data){
-							$userFormArea.hide();
-							$messageArea.show();
+							/*$userFormArea.hide();
+							$messageArea.show();*/
+							window.location.href = data;
 						}
 					});
-				
+
 				$username.val('');
 				$password.val('');
 			});
 
+//displays the usernames in username array
 			socket.on('get users', function(data){
 				var html = '';
 				for(i=0; i<data.length; i++){
