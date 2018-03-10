@@ -29,7 +29,7 @@ $(function(){
 						if(data){
 							/*$userFormArea.hide();
 							$messageArea.show();*/
-							//window.location.href = data;
+							window.location.href = data;
 						}
 					});
 

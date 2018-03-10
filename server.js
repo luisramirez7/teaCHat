@@ -7,13 +7,15 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
 //create router
-var router = express.Router();
-app.use(router);
-
-app.use(bodyParser.urlencoded({ extended: true }));
+/*var router = express.Router();
+app.use(router);*/
+//way1
+//app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
 
+//way 2
+var urlencodedParser = bodyParser.urlencoded({extended: true});
 
 users = [];
 connections = [];
@@ -43,14 +45,18 @@ app.get('/chat', function(req, res){
 app.get('/login', function(req, res){
 	res.sendFile(__dirname + '/view/login.html');
 });
-
+//way2
+app.post('/login', function(req, res){
+  console.log(req.body); //print object
+  res.render('chat', {data: req.body}); //gives access to entire request to chat view
+})
 app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/view/register.html');
 });
-/*resource: http://jilles.me/express-routing-the-beginners-guide/*/
-router.post('/chat', function(req, res)){
+/* way: 1 using router resource: http://jilles.me/express-routing-the-beginners-guide/*/
+/*router.post('/chat', function(req, res){
   var username = req.body.username;
-}
+});*/
 
 //creates user
 app.post('/submit', function(req, res){
