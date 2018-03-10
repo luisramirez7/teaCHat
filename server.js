@@ -1,9 +1,12 @@
+//requirements
 var express = require('express');
-var app = express();
 var bodyParser = require('body-parser');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
+//build the app
+var app = express();
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
@@ -11,6 +14,7 @@ app.use(express.static(__dirname + '/assets'));
 users = [];
 connections = [];
 
+//connecting to db
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
@@ -41,6 +45,7 @@ app.get('/register', function(req, res){
 });
 
 app.post('/submit', function(req, res){
+  //todo: user model for username
 	var email = req.body.email;
 	var username = req.body.username;
 	var password = req.body.password;
@@ -49,7 +54,7 @@ app.post('/submit', function(req, res){
 	var authenticationId = req.body.authenticationId;
 	var verificationNumber = '1234';
 	var flag = true;
-
+//authenticating user type 
 	if(userType == 'professor' && authenticationId == verificationNumber){
 		type = 1;
 	} else if(userType == "professor" && authenticationId != verificationNumber){

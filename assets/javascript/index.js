@@ -1,5 +1,6 @@
 $(function(){
-			var socket = io.connect();
+
+			var socket = io.connect(); //connect to server js
 			var $messageForm = $('#messageForm');
 			var $message = $('#message');
 			var $chat = $('#chat');
@@ -19,7 +20,7 @@ $(function(){
 			socket.on('new message', function(data){
 				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
 			});
-
+//passing input into data 
 			$userForm.submit(function(e){
 				e.preventDefault();
 					socket.emit('new user', {username:$username.val(), password:$password.val()}, function(data){
