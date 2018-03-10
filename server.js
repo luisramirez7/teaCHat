@@ -1,11 +1,13 @@
 //requirements
 var express = require('express');
 var bodyParser = require('body-parser');
+//build the app
+var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
-//build the app
-var app = express();
+//create router
+var router = express.Router();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -43,9 +45,9 @@ app.get('/login', function(req, res){
 app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/view/register.html');
 });
-
+//takes input from login view to make user object
 app.post('/submit', function(req, res){
-  //todo: user model for username
+
 	var email = req.body.email;
 	var username = req.body.username;
 	var password = req.body.password;
@@ -54,7 +56,16 @@ app.post('/submit', function(req, res){
 	var authenticationId = req.body.authenticationId;
 	var verificationNumber = '1234';
 	var flag = true;
-//authenticating user type 
+
+    //todo: user model for username
+    function user(username, userType, type){
+      this.name = username;
+      this.uType = userType;
+      this.t = type;
+    }
+  var chatUser = user(username, userType, type);
+  console.log('work'+chatUser);
+//authenticating user type
 	if(userType == 'professor' && authenticationId == verificationNumber){
 		type = 1;
 	} else if(userType == "professor" && authenticationId != verificationNumber){
@@ -62,7 +73,7 @@ app.post('/submit', function(req, res){
 		res.sendFile(__dirname + '/assets/view/register.html');
 		flag = false;
 	}
-
+//verify registration
 	if(flag){
 		con.query('INSERT INTO User (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
 			if (error) throw error;
