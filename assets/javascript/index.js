@@ -16,7 +16,7 @@ $(function(){
 				socket.emit('send message', $message.val());
 				$message.val('');
 			});
-//sends message to chatroom 
+//sends message to chatroom
 			socket.on('new message', function(data){
 				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
 			});
@@ -25,10 +25,11 @@ $(function(){
 				e.preventDefault();
 					socket.emit('new user', {username:$username.val(), password:$password.val()}, function(data){
 					console.log(data);
+					//TODO: save the user array to pass it through
 						if(data){
 							/*$userFormArea.hide();
 							$messageArea.show();*/
-							window.location.href = data;
+							//window.location.href = data;
 						}
 					});
 

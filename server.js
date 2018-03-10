@@ -8,10 +8,12 @@ var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
 //create router
 var router = express.Router();
+app.use(router);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
+
 
 users = [];
 connections = [];
@@ -45,7 +47,12 @@ app.get('/login', function(req, res){
 app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/view/register.html');
 });
-//takes input from login view to make user object
+/*resource: http://jilles.me/express-routing-the-beginners-guide/*/
+router.post('/chat', function(req, res)){
+  var username = req.body.username;
+}
+
+//creates user
 app.post('/submit', function(req, res){
 
 	var email = req.body.email;
@@ -57,14 +64,16 @@ app.post('/submit', function(req, res){
 	var verificationNumber = '1234';
 	var flag = true;
 
-    //todo: user model for username
+    //todo: user OBJECT  for username
     function user(username, userType, type){
       this.name = username;
-      this.uType = userType;
-      this.t = type;
+      this.userType = userType;
+      this.type = type;
     }
   var chatUser = user(username, userType, type);
-  console.log('work'+chatUser);
+  // console.log('work'+chatUser);
+
+
 //authenticating user type
 	if(userType == 'professor' && authenticationId == verificationNumber){
 		type = 1;
@@ -101,7 +110,7 @@ io.sockets.on('connection', function(socket){
 		io.sockets.emit('new message', {msg: data, user: socket.username});
 	});
 
-	// new user
+	// user enters room
 	 socket.on('new user', function(data, callback){
 
 		var isValid = 0;
@@ -116,7 +125,7 @@ io.sockets.on('connection', function(socket){
 			console.log(data.username);
 			console.log(data.password);
 			users.push(socket.username);
-			updateUsernames();
+			updateUsernames(); //move to index.js
 		} else {
 			console.log("NO");
 			callback(false);
