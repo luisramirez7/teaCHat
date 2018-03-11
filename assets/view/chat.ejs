@@ -1,0 +1,122 @@
+<html>
+<head>
+	<title>IO Chat</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"><script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+
+	<link rel="stylesheet" href="/css/styles.css">
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+
+	<style>
+		#newRoomButton {visibility: <%= visibility %> ;}
+	</style>
+
+
+
+</head>
+<body>
+	<div class="container">
+		<div id="header">
+			teaCHat
+			<hr>
+		</div>
+		<div class="row" id="messageArea">
+			<div class="col-md-4">
+				<div class="row">
+				<div class="well">
+					<h3> Chat Rooms </h3>
+					<br>
+					<ul class="list-group" id="users">
+					</ul>
+				</div>
+			</div>
+			<div class="row" id=newRoomButton>
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
+							Create Chatroom
+						</button>
+			</div>
+		</br>
+			<div class="row">
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+						  Add Chatroom
+						</button>
+
+			</div>
+			</div>
+			<div class="col-md-8">
+				<div class="chat" id="chat"> </div>
+
+				<h3>Welcome to teaCHat! Select an option from the sidebar</h3>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+
+<footer>
+	<!-- Modal -->
+	<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Create A Chatroom</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+				<center>
+	      <div class="modal-body .col-md-3 .ml-auto">
+
+	        <form method="post" action="new-room">
+						<label> Chatroom Name </label> <br>
+						<input type="text" name="chatroomName" />
+						<br>
+						<h6>Code: 12345</h6>
+					</br>
+
+						<input type="submit" class="btn btn-primary" value="Create Room" />
+					</form>
+
+	      </div>
+			</center>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Add a Chatroom</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+				<center>
+	      <div class="modal-body .col-md-3 .ml-auto">
+
+	        <form method="post" action="new-room">
+						<label> Chatroom Code </label> <br>
+						<input type="text" name="chatroomName" />
+					</br>
+				</br>
+						<input type="submit" class="btn btn-primary" value="Add Room" />
+					</form>
+
+	      </div>
+			</center>
+	    </div>
+	  </div>
+	</div>
+
+
+</footer>
+</html>
