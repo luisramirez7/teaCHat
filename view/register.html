@@ -3,17 +3,18 @@
 	<title>IO Chat</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
 	<link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 	<div class="container">
 		<div id="header">
 			teaCHat
-			<hr>
+			<hr> 
 		</div>
 		<div id="registerArea" class="row">
 			<div class="col-md-12 text-center">
-				<form action="/submit-register" id="registerForm" method="post">
+				<form action="/submit" id="registerForm" method="post">
 					<br />
 					<div class="row">
             			<div class="col-lg-4 col-lg-offset-4">
@@ -34,7 +35,7 @@
        				 </div>
        				 <br />
        				 <div class="row">
-            			<div class="col-lg-2 col-lg-offset-5">
+            			<div class="col-lg-2 col-lg-offset-5">	
        				 		User type:
                				<select class="form-control mr-sm-2" name="userType" id = "userType">
                					<option value="professor">Professor</option>
@@ -58,7 +59,7 @@
        				<br /><br />
 				</form>
 				Existing User? <a href="/login">Log in here!</a>
-			</div>
+			</div>	
 		</div>
 	</div>
 </body>
