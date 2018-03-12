@@ -103,7 +103,7 @@ app.post('/submit-login', function(req, res){
         }else{
           upper_bound = names.length - 1;
           lower_bound = 0;
-          req.session.pseudonym = "Professor "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+          req.session.pseudonym = "Professor "+username;
           res.render(__dirname + '/assets/view/chat', {
              visibility: 'visible'
            });
