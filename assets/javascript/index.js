@@ -1,6 +1,6 @@
 $(function(){
 
-			var socket = io.connect({ query:'name='+$('#pseudo').html() });
+			var socket = io.connect(); //connect to server js
 			var $messageForm = $('#messageForm');
 			var $message = $('#message');
 			var $chat = $('#chat');
@@ -8,12 +8,12 @@ $(function(){
 			var $userFormArea = $('#userFormArea');
 			var $userForm = $('#userForm');
 			var $users = $('#users');
-			var $username = $('#pseudo').html();
+			var $username = $('#username');
 			var $password = $('#password');
 
 			$messageForm.submit(function(e){
 				e.preventDefault();
-				socket.emit('send message', {msg:$message.val(),user:$('#pseudo').html()});
+				socket.emit('send message', $message.val());
 				$message.val('');
 			});
 //sends message to chatroom
@@ -40,11 +40,9 @@ $(function(){
 //displays the usernames in username array
 			socket.on('get users', function(data){
 				var html = '';
-				console.log(data);
 				for(i=0; i<data.length; i++){
 					html += '<li class="list-group-item">' + data[i] + ' </li>'
 				}
-				console.log(html);
 				$users.html(html);
 			})
 		});
