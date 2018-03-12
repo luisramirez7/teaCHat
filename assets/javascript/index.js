@@ -1,10 +1,6 @@
 $(function(){
-<<<<<<< HEAD
 
-			var socket = io.connect(); //connect to server js
-=======
 			var socket = io.connect({ query:'name='+$('#pseudo').html() });
->>>>>>> f995c83da67be9faee8af63793966ec12af4fde7
 			var $messageForm = $('#messageForm');
 			var $message = $('#message');
 			var $chat = $('#chat');
