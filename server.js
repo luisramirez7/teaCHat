@@ -1,16 +1,26 @@
+//requirements
 var express = require('express');
-var app = express();
 var bodyParser = require('body-parser');
+//build the app
+var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
-app.use(bodyParser.urlencoded({ extended: true }));
+//create router
+/*var router = express.Router();
+app.use(router);*/
+//way1
+//app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
+
+//way 2
+var urlencodedParser = bodyParser.urlencoded({extended: true});
 
 users = [];
 connections = [];
 
+//connecting to db
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
@@ -29,18 +39,28 @@ server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
 app.get('/chat', function(req, res){
-	res.sendFile(__dirname + '/assets/view/chat.html');
+	res.sendFile(__dirname + '/view/chat.html');
 });
 
 app.get('/login', function(req, res){
-	res.sendFile(__dirname + '/assets/view/login.html');
+	res.sendFile(__dirname + '/view/login.html');
 });
-
+//way2
+app.post('/login', function(req, res){
+  console.log(req.body); //print object
+  res.render('chat', {data: req.body}); //gives access to entire request to chat view
+})
 app.get('/register', function(req, res){
-	res.sendFile(__dirname + '/assets/view/register.html');
+	res.sendFile(__dirname + '/view/register.html');
 });
+/* way: 1 using router resource: http://jilles.me/express-routing-the-beginners-guide/*/
+/*router.post('/chat', function(req, res){
+  var username = req.body.username;
+});*/
 
+//creates user
 app.post('/submit', function(req, res){
+
 	var email = req.body.email;
 	var username = req.body.username;
 	var password = req.body.password;
@@ -50,6 +70,17 @@ app.post('/submit', function(req, res){
 	var verificationNumber = '1234';
 	var flag = true;
 
+    //todo: user OBJECT  for username
+    function user(username, userType, type){
+      this.name = username;
+      this.userType = userType;
+      this.type = type;
+    }
+  var chatUser = user(username, userType, type);
+  // console.log('work'+chatUser);
+
+
+//authenticating user type
 	if(userType == 'professor' && authenticationId == verificationNumber){
 		type = 1;
 	} else if(userType == "professor" && authenticationId != verificationNumber){
@@ -57,7 +88,7 @@ app.post('/submit', function(req, res){
 		res.sendFile(__dirname + '/assets/view/register.html');
 		flag = false;
 	}
-
+//verify registration
 	if(flag){
 		con.query('INSERT INTO User (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
 			if (error) throw error;
@@ -79,15 +110,15 @@ io.sockets.on('connection', function(socket){
 	connections.splice(connections.indexOf(socket), 1);
 	console.log('Disconnected : %s sockets connected', connections.length);
 	});
-	
+
 	//Send Message
 	socket.on('send message', function(data){
 		io.sockets.emit('new message', {msg: data, user: socket.username});
 	});
 
-	// new user
+	// user enters room
 	 socket.on('new user', function(data, callback){
-		
+
 		var isValid = 0;
 		socket.username = data.username;
 		socket.password = data.password;
@@ -98,14 +129,14 @@ io.sockets.on('connection', function(socket){
 			console.log("YES");
 			callback('/chat');
 			console.log(data.username);
-			console.log(data.password);		
+			console.log(data.password);
 			users.push(socket.username);
-			updateUsernames();
+			updateUsernames(); //move to index.js
 		} else {
 			console.log("NO");
 			callback(false);
 		}
-		}); 
+		});
 	})
 
 	function updateUsernames(){
@@ -132,11 +163,11 @@ io.sockets.on('connection', function(socket){
 				}
 			} else {
 				callback(2);
-				
+
 			}
-		}	
+		}
 	});
-	
+
 }
 */
 });
