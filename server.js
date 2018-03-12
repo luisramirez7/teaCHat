@@ -87,37 +87,61 @@ app.post('/submit-login', function(req, res){
 	var password = req.body.password;
 
   		validateUser.validUser(username,password, con, result => {
-			var isValid = result.valid;
-			console.log("VALID2 : " + isValid);
-			if(isValid === 1){
-  			console.log("YES");
-        console.log(result.type);
-        if(result.type === 0 ){
-  		   //updateUsernames();
-          upper_bound = names.length - 1;
-          lower_bound = 0;
-          req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
-          res.render(__dirname + '/assets/view/chat', {
-              visibility: 'hidden'
-          });
-        }else{
-          upper_bound = names.length - 1;
-          lower_bound = 0;
-          req.session.pseudonym = "Professor "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
-          res.render(__dirname + '/assets/view/chat', {
-             visibility: 'visible'
-           });
-         }
 
-		} else {
-			console.log("NO");
-			res.sendFile(__dirname + '/assets/view/login.html');
-		}
+			  var isValid = result.valid;
+			  console.log("VALID2 : " + isValid);
+			  if(isValid === 1){
+  			     console.log("YES");
+             console.log(result.type);
+             if(result.type === 0 && 1===3 ){
+  		   //updateUsernames();
+              upper_bound = names.length - 1;
+              lower_bound = 0;
+              req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+              res.render(__dirname + '/assets/view/chat', {
+              visibility: 'hidden'
+              });
+            }else{
+              var roomId = makeid();
+              upper_bound = names.length - 1;
+              lower_bound = 0;
+              req.session.pseudonym = "Professor "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+              req.session.roomId = roomId;
+              res.render(__dirname + '/assets/view/chat', {
+              visibility: 'visible',
+              roomId: roomId
+            });
+          }
+
+		    } else {
+			       console.log("NO");
+			          res.sendFile(__dirname + '/assets/view/login.html');
+		    }
 		});
 });
 
+function makeid() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 5; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
 
 app.post('/new-room', function(req, res){
+	var roomName = req.body.chatroomName;
+  chatrooms.push(roomName);
+  console.log('new room!');
+  res.render(__dirname + '/assets/view/chatroom',{
+    pseudonym : req.session.pseudonym
+  });
+
+});
+
+
+app.post('/create-room', function(req, res){
 	var roomName = req.body.chatroomName;
   chatrooms.push(roomName);
   console.log('new room!');
@@ -132,9 +156,6 @@ app.get('/user-data', function(req, res){
   res.json({ name: "example" });
 
 });
-
-
-
 
 
 io.on('connection', function(socket){
