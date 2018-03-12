@@ -1,5 +1,6 @@
 $(function(){
-			var socket = io.connect();	
+
+			var socket = io.connect(); //connect to server js
 			var $messageForm = $('#messageForm');
 			var $message = $('#message');
 			var $chat = $('#chat');
@@ -15,25 +16,28 @@ $(function(){
 				socket.emit('send message', $message.val());
 				$message.val('');
 			});
-
+//sends message to chatroom
 			socket.on('new message', function(data){
-				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');	
+				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
 			});
-
+//passing input into data
 			$userForm.submit(function(e){
 				e.preventDefault();
 					socket.emit('new user', {username:$username.val(), password:$password.val()}, function(data){
 					console.log(data);
+					//TODO: save the user array to pass it through
 						if(data){
-							$userFormArea.hide();
-							$messageArea.show();
+							/*$userFormArea.hide();
+							$messageArea.show();*/
+							window.location.href = data;
 						}
 					});
-				
+
 				$username.val('');
 				$password.val('');
 			});
 
+//displays the usernames in username array
 			socket.on('get users', function(data){
 				var html = '';
 				for(i=0; i<data.length; i++){
