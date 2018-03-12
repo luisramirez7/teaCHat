@@ -1,4 +1,4 @@
-	
+
 	body{
 		margin-top: 30px;
 		}
@@ -14,9 +14,6 @@
 		background: #ff7538;
 	}
 
-	#messageArea{
-		display:none;
-	}
 
 	#smallOrange{
 		font-family: Calibri;

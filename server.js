@@ -4,12 +4,15 @@ var bodyParser = require('body-parser');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
+var session = require('client-sessions');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
 
 users = [];
 connections = [];
+chatrooms = [];
+var names = ["Panda", "Squirrell", "Potato","Chicken","Nothin","Monkey"];
 
 var mysql = require('mysql');
 
@@ -28,6 +31,17 @@ con.connect(function(err) {
 server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
+
+app.use(session({
+  cookieName: 'session',
+  secret: 'mySession',
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
+}));
+
+app.set('view engine','ejs');
+
+
 app.get('/chat', function(req, res){
 	res.sendFile(__dirname + '/assets/view/chat.html');
 });
@@ -40,7 +54,7 @@ app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/assets/view/register.html');
 });
 
-app.post('/submit', function(req, res){
+app.post('/submit-register', function(req, res){
 	var email = req.body.email;
 	var username = req.body.username;
 	var password = req.body.password;
@@ -67,50 +81,108 @@ app.post('/submit', function(req, res){
 	}
 });
 
-io.sockets.on('connection', function(socket){
+app.post('/submit-login', function(req, res){
+  req.session.destroy();
+	var username = req.body.username;
+	var password = req.body.password;
+
+  		validateUser.validUser(username,password, con, result => {
+			var isValid = result.valid;
+			console.log("VALID2 : " + isValid);
+			if(isValid === 1){
+  			console.log("YES");
+        console.log(result.type);
+        if(result.type === 0 ){
+  		   //updateUsernames();
+          upper_bound = names.length - 1;
+          lower_bound = 0;
+          req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+          res.render(__dirname + '/assets/view/chat', {
+              visibility: 'hidden'
+          });
+        }else{
+          upper_bound = names.length - 1;
+          lower_bound = 0;
+          req.session.pseudonym = "Professor "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+          res.render(__dirname + '/assets/view/chat', {
+             visibility: 'visible'
+           });
+         }
+
+		} else {
+			console.log("NO");
+			res.sendFile(__dirname + '/assets/view/login.html');
+		}
+		});
+});
+
+
+app.post('/new-room', function(req, res){
+	var roomName = req.body.chatroomName;
+  chatrooms.push(roomName);
+  console.log('new room!');
+  res.render(__dirname + '/assets/view/chatroom',{
+    pseudonym : req.session.pseudonym
+  });
+
+});
+
+
+app.get('/user-data', function(req, res){
+  res.json({ name: "example" });
+
+});
+
+
+
+
+
+io.on('connection', function(socket){
 	connections.push(socket);
 	console.log('Connected : %s sockets connected', connections.length);
+  var handshakeData = socket.request;
 
+  users.push(socket.handshake.query.name);
+  console.log(users);
+  io.sockets.emit('get users', users);
 	//Disconnect
 	socket.on('disconnect', function(data){
 		//if(!socket.username) return;
 		users.splice(users.indexOf(socket.username), 1);
-		updateUsernames();
+		io.sockets.emit('get users', users);
 	connections.splice(connections.indexOf(socket), 1);
 	console.log('Disconnected : %s sockets connected', connections.length);
 	});
-	
+
 	//Send Message
 	socket.on('send message', function(data){
-		io.sockets.emit('new message', {msg: data, user: socket.username});
+		io.sockets.emit('new message', {msg: data.msg, user: data.user});
 	});
 
 	// new user
-	 socket.on('new user', function(data, callback){
-		
-		var isValid = 0;
-		socket.username = data.username;
-		socket.password = data.password;
-		validateUser.validUser(socket.username, socket.password, con, result => {
-			var isValid = result;
-			console.log("VALID2 : " + isValid);
-			if(isValid === 1){
-			console.log("YES");
-			callback('/chat');
-			console.log(data.username);
-			console.log(data.password);		
-			users.push(socket.username);
-			updateUsernames();
-		} else {
-			console.log("NO");
-			callback(false);
-		}
-		}); 
-	})
+	//  socket.on('new user', function(data, callback){
+  //
+	// 	var isValid = 0;
+	// 	socket.username = data.username;
+	// 	socket.password = data.password;
+	// 	validateUser.validUser(socket.username, socket.password, con, result => {
+	// 		var isValid = result;
+	// 		console.log("VALID2 : " + isValid);
+	// 		if(isValid === 1){
+	// 		console.log("YES");
+	// 		callback('/chat');
+	// 		console.log(data.username);
+	// 		console.log(data.password);
+	// 		users.push(socket.username);
+	// 		updateUsernames();
+	// 	} else {
+	// 		console.log("NO");
+	// 		callback(false);
+	// 	}
+	// 	});
+	// })
 
-	function updateUsernames(){
-		io.sockets.emit('get users', users);
-	}
+
 
 /*
 	const validUser = (username, password, callback) => {
@@ -132,11 +204,11 @@ io.sockets.on('connection', function(socket){
 				}
 			} else {
 				callback(2);
-				
+
 			}
-		}	
+		}
 	});
-	
+
 }
 */
 });

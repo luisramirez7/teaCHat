@@ -15,13 +15,13 @@
 </style>
 </head>
 <body>
-	<div class="containter">
+	<div class="container">
 		<div id="userFormArea" class="row">
 			<div class="col-md-12">
-				<form id="userForm">
+				<form id="userForm" method="post" action="/submit-login">
 					<div class="form-group">
 						<label> Enter Username </label>
-						<input class="form-control" id="username" /> 
+						<input class="form-control" id="username" />
 						<br />
 						<label> Enter Password </label>
 						<input class="form-control" id="password" />
@@ -29,7 +29,7 @@
 						<input type="submit" class="btn btn-primary" value="Login" />
 					</div>
 				</form>
-			</div>	
+			</div>
 		</div>
 		<div class="row" id="messageArea">
 			<div class="col-md-4">
@@ -55,7 +55,7 @@
 
 	<script>
 		$(function(){
-			var socket = io.connect();	
+			var socket = io.connect();
 			var $messageForm = $('#messageForm');
 			var $message = $('#message');
 			var $chat = $('#chat');
@@ -73,7 +73,7 @@
 			});
 
 			socket.on('new message', function(data){
-				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');	
+				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
 			});
 
 			$userForm.submit(function(e){
@@ -85,7 +85,7 @@
 							$messageArea.show();
 						}
 					});
-				
+
 				$username.val('');
 				$password.val('');
 			});
