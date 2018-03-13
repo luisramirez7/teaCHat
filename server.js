@@ -9,9 +9,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
 
-users = [];
-connections = [];
-chatrooms = [];
+var users = {};
+var connections = {};
+var chatrooms = [];
+var chatroomName = {};
 var names = ["Panda", "Squirrell", "Potato","Chicken","Nothin","Monkey"];
 
 var mysql = require('mysql');
@@ -41,10 +42,6 @@ app.use(session({
 
 app.set('view engine','ejs');
 
-
-app.get('/chat', function(req, res){
-	res.sendFile(__dirname + '/assets/view/chat.html');
-});
 
 app.get('/login', function(req, res){
 	res.sendFile(__dirname + '/assets/view/login.html');
@@ -93,7 +90,7 @@ app.post('/submit-login', function(req, res){
 			  if(isValid === 1){
   			     console.log("YES");
              console.log(result.type);
-             if(result.type === 0 && 1===3 ){
+             if(result.type === 0 ){
   		   //updateUsernames();
               upper_bound = names.length - 1;
               lower_bound = 0;
@@ -105,11 +102,10 @@ app.post('/submit-login', function(req, res){
               var roomId = makeid();
               upper_bound = names.length - 1;
               lower_bound = 0;
-              req.session.pseudonym = "Professor "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+              req.session.pseudonym = "Professor "+ username;
               req.session.roomId = roomId;
               res.render(__dirname + '/assets/view/chat', {
-              visibility: 'visible',
-              roomId: roomId
+              visibility: 'visible'
             });
           }
 
@@ -131,22 +127,30 @@ function makeid() {
 }
 
 app.post('/new-room', function(req, res){
-	var roomName = req.body.chatroomName;
-  chatrooms.push(roomName);
-  console.log('new room!');
+	var code = req.body.chatroomCode;
+  console.log(chatrooms.indexOf(code));
+  if(chatrooms.indexOf(code) != -1 ){
   res.render(__dirname + '/assets/view/chatroom',{
-    pseudonym : req.session.pseudonym
+    pseudonym : req.session.pseudonym,
+    chatroomId : code,
+    roomName : chatroomName[code]
   });
+}
 
 });
 
 
 app.post('/create-room', function(req, res){
-	var roomName = req.body.chatroomName;
-  chatrooms.push(roomName);
+	var name = req.body.chatroomName;
+  var code = req.body.code;
+  chatrooms.push(code);
+  chatroomName[code] = name;
   console.log('new room!');
+  req.session.code = code;
   res.render(__dirname + '/assets/view/chatroom',{
-    pseudonym : req.session.pseudonym
+    pseudonym : req.session.pseudonym,
+    chatroomId : code,
+    roomName : name
   });
 
 });
@@ -159,25 +163,35 @@ app.get('/user-data', function(req, res){
 
 
 io.on('connection', function(socket){
-	connections.push(socket);
-	console.log('Connected : %s sockets connected', connections.length);
-  var handshakeData = socket.request;
 
-  users.push(socket.handshake.query.name);
-  console.log(users);
-  io.sockets.emit('get users', users);
+var handshakeData = socket.request;
+var code = socket.handshake.query.code;
+
+socket.join(code);
+if (connections[code]){
+	connections[code].push(socket);
+}else{
+  connections[code] = [socket];
+}
+
+if (users[code]){
+	users[code].push(socket.handshake.query.name);
+}else{
+  users[code] = [socket.handshake.query.name];
+}
+
+  io.to(code).emit('get users', users[code]);
 	//Disconnect
 	socket.on('disconnect', function(data){
 		//if(!socket.username) return;
-		users.splice(users.indexOf(socket.username), 1);
-		io.sockets.emit('get users', users);
-	connections.splice(connections.indexOf(socket), 1);
-	console.log('Disconnected : %s sockets connected', connections.length);
+		users[code].splice(users[code].indexOf(socket.username), 1);
+		io.to(code).emit('get users', users[code]);
+	connections[code].splice(connections[code].indexOf(socket), 1);
 	});
 
 	//Send Message
 	socket.on('send message', function(data){
-		io.sockets.emit('new message', {msg: data.msg, user: data.user});
+		io.to(code).emit('new message', {msg: data.msg, user: data.user});
 	});
 
 	// new user

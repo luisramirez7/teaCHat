@@ -1,5 +1,11 @@
 $(function(){
-			var socket = io.connect({ query:'name='+$('#pseudo').html() });
+			var socket = io.connect({
+				query:{
+				name:$('#pseudo').html(),
+				code:$('#code').html()
+				}
+
+			});
 			var $messageForm = $('#messageForm');
 			var $message = $('#message');
 			var $chat = $('#chat');
@@ -12,7 +18,7 @@ $(function(){
 
 			$messageForm.submit(function(e){
 				e.preventDefault();
-				socket.emit('send message', {msg:$message.val(),user:$('#pseudo').html()});
+				socket.emit('send message', {msg:$message.val(),user:$('#pseudo').html(),code:$('#code').html()});
 				$message.val('');
 			});
 

@@ -11,6 +11,7 @@
 </head>
 <body>
 	<p id="pseudo" style="visibility:hidden;"><%= pseudonym%></p>
+	<p id="code" style="visibility:hidden;"><%= chatroomId%></p>
 	<div class="container">
 		<div id="header">
 			teaCHat
@@ -19,7 +20,8 @@
 		<div class="row" id="messageArea">
 			<div class="col-md-4">
 				<div class="well">
-					<h3> Online users </h3>
+					<h3> <%=roomName %> </h3>
+					<h3> Online Users </h3>
 					<ul class="list-group" id="users"></ul>
 				</div>
 			</div>
