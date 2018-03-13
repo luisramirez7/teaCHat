@@ -13,6 +13,19 @@
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	function do_something(){
+	   // Do your stuff here
+		 var text = "";
+		 var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		 for (var i = 0; i < 5; i++){
+			 text += possible.charAt(Math.floor(Math.random() * possible.length));
+		 }
+		 $('input[name="code"]').val(text);
+		 $("#codeDisplay").html(text);
+	}
+</script>
 
 	<style>
 		#newRoomButton {visibility: <%= visibility %> ;}
@@ -38,7 +51,7 @@
 				</div>
 			</div>
 			<div class="row" id=newRoomButton>
-						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal" onclick="do_something()">
 							Create Chatroom
 						</button>
 			</div>
@@ -75,11 +88,12 @@
 				<center>
 	      <div class="modal-body .col-md-3 .ml-auto">
 
-	        <form method="post" action="new-room">
+	        <form method="post" action="create-room" id="myform">
 						<label> Chatroom Name </label> <br>
+						<input type="hidden" name="code" value=""/>
 						<input type="text" name="chatroomName" />
 						<br>
-						<h6>Code: 12345</h6>
+						Code: <h6 id="codeDisplay"></h6>
 					</br>
 
 						<input type="submit" class="btn btn-primary" value="Create Room" />
@@ -105,7 +119,7 @@
 
 	        <form method="post" action="new-room">
 						<label> Chatroom Code </label> <br>
-						<input type="text" name="chatroomName" />
+						<input type="text" name="chatroomCode" />
 					</br>
 				</br>
 						<input type="submit" class="btn btn-primary" value="Add Room" />
