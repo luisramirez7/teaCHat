@@ -70,7 +70,7 @@ app.post('/submit-register', function(req, res){
 	}
 
 	if(flag){
-		con.query('INSERT INTO User (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
+		con.query('INSERT INTO ChatroomUser (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
 			if (error) throw error;
 			console.log("Registration successful!");
 			res.sendFile(__dirname + '/assets/view/login.html');
@@ -184,9 +184,9 @@ if (users[code]){
 	//Disconnect
 	socket.on('disconnect', function(data){
 		//if(!socket.username) return;
-		users[code].splice(users[code].indexOf(socket.username), 1);
+		users[code].splice(users[code].indexOf(socket.handshake.query.name), 1);
 		io.to(code).emit('get users', users[code]);
-	connections[code].splice(connections[code].indexOf(socket), 1);
+		connections[code].splice(connections[code].indexOf(socket), 1);
 	});
 
 	//Send Message
