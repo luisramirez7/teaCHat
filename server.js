@@ -3,7 +3,6 @@ var app = express();
 var bodyParser = require('body-parser');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var fileUpload = require('express-fileupload');
 var validateUser = require(__dirname + '/validateuser.js');
 var session = require('client-sessions');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,12 +13,10 @@ var users = {};
 var connections = {};
 var chatrooms = [];
 var chatroomName = {};
-var names = ["Alligator", "Anteater", "Armadillo", "Auroch", "Axolotl", "Badger", "Bat", "Beaver", "Buffalo", "Camel", "Chameleon", "Cheetah", "Chipmunk", "Chinchilla", "Chupacabra", "Cormorant", "Coyote", "Crow", "Dingo" ,
-"Dinosaur",  "Dog", "Dolphin", "Dragon", "Duck", "Elephant", "Ferret", "Fox", "Frog", "Giraffe", "Gopher", "Grizzly", "Hedgehog", "Hippo", "Hyena", "Jackal", "Ibex", "Ifrit", "Iguana", "Kangaroo",
-"Koala", "Kraken", "Lemur", "Leopard", "Liger", "Lion", "Llama", "Manatee", "Mink", "Monkey", "Moose", "Narwhal", "Nyan Cat", "Orangutan", "Otter", "Panda", "Penguin", "Platypus", "Python", "Pumpkin",
-"Quagga", "Rabbit", "Raccoon", "Rhino", "Sheep", "Shrew", "Skunk", "Slow Loris", "Squirrel", "Tiger", "Turtle", "Walrus", "Wolf", "Wolverine", "Wombat"];
+var names = ["Panda", "Squirrell", "Potato","Chicken","Nothin","Monkey"];
+
 var mysql = require('mysql');
-var existUser = [];
+
 var con = mysql.createConnection({
   host: "cse.unl.edu",
   user: "otiong",
@@ -54,16 +51,6 @@ app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/assets/view/register.html');
 });
 
-app.use(fileUpload());
-
-app.post('/upload', function(req, res) {
-  console.log("Posting!");
-  console.log(res);
-  console.log(req);
-});
-
-
-
 app.post('/submit-register', function(req, res){
 	var email = req.body.email;
 	var username = req.body.username;
@@ -83,7 +70,7 @@ app.post('/submit-register', function(req, res){
 	}
 
 	if(flag){
-		con.query('INSERT INTO User (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
+		con.query('INSERT INTO ChatroomUser (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
 			if (error) throw error;
 			console.log("Registration successful!");
 			res.sendFile(__dirname + '/assets/view/login.html');
@@ -108,27 +95,24 @@ app.post('/submit-login', function(req, res){
               upper_bound = names.length - 1;
               lower_bound = 0;
               req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
-              //prevents duplicate anon names
-              while(existUser.includes(req.session.pseudonym)){
-                req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
-              }
-              existUser.push(req.session.pseudonym);
               res.render(__dirname + '/assets/view/chat', {
               visibility: 'hidden'
-          });
-        }else{
-          upper_bound = names.length - 1;
-          lower_bound = 0;
-          req.session.pseudonym = "Professor "+username;
-          res.render(__dirname + '/assets/view/chat', {
-             visibility: 'visible'
-           });
-         }
+              });
+            }else{
+              var roomId = makeid();
+              upper_bound = names.length - 1;
+              lower_bound = 0;
+              req.session.pseudonym = "Professor "+ username;
+              req.session.roomId = roomId;
+              res.render(__dirname + '/assets/view/chat', {
+              visibility: 'visible'
+            });
+          }
 
-		} else {
-			console.log("NO");
-			res.sendFile(__dirname + '/assets/view/login.html');
-		}
+		    } else {
+			       console.log("NO");
+			          res.sendFile(__dirname + '/assets/view/login.html');
+		    }
 		});
 });
 
@@ -155,7 +139,7 @@ app.post('/new-room', function(req, res){
 
 });
 
-//FIXME: CREATING NEW CHAT ROOM BRINGS IT TO THIS URL. CAN WE MAKE IT SO IT IS CUSTOMIZABLE TO EACH CREATION?
+
 app.post('/create-room', function(req, res){
 	var name = req.body.chatroomName;
   var code = req.body.code;
