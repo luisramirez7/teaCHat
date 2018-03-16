@@ -14,10 +14,12 @@ var users = {};
 var connections = {};
 var chatrooms = [];
 var chatroomName = {};
-var names = ["Panda", "Squirrell", "Potato","Chicken","Nothin","Monkey"];
-
+var names = ["Alligator", "Anteater", "Armadillo", "Auroch", "Axolotl", "Badger", "Bat", "Beaver", "Buffalo", "Camel", "Chameleon", "Cheetah", "Chipmunk", "Chinchilla", "Chupacabra", "Cormorant", "Coyote", "Crow", "Dingo" ,
+"Dinosaur",  "Dog", "Dolphin", "Dragon", "Duck", "Elephant", "Ferret", "Fox", "Frog", "Giraffe", "Gopher", "Grizzly", "Hedgehog", "Hippo", "Hyena", "Jackal", "Ibex", "Ifrit", "Iguana", "Kangaroo",
+"Koala", "Kraken", "Lemur", "Leopard", "Liger", "Lion", "Llama", "Manatee", "Mink", "Monkey", "Moose", "Narwhal", "Nyan Cat", "Orangutan", "Otter", "Panda", "Penguin", "Platypus", "Python", "Pumpkin",
+"Quagga", "Rabbit", "Raccoon", "Rhino", "Sheep", "Shrew", "Skunk", "Slow Loris", "Squirrel", "Tiger", "Turtle", "Walrus", "Wolf", "Wolverine", "Wombat"];
 var mysql = require('mysql');
-
+var existUser = [];
 var con = mysql.createConnection({
   host: "cse.unl.edu",
   user: "otiong",
@@ -106,24 +108,27 @@ app.post('/submit-login', function(req, res){
               upper_bound = names.length - 1;
               lower_bound = 0;
               req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+              //prevents duplicate anon names
+              while(existUser.includes(req.session.pseudonym)){
+                req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+              }
+              existUser.push(req.session.pseudonym);
               res.render(__dirname + '/assets/view/chat', {
               visibility: 'hidden'
-              });
-            }else{
-              var roomId = makeid();
-              upper_bound = names.length - 1;
-              lower_bound = 0;
-              req.session.pseudonym = "Professor "+ username;
-              req.session.roomId = roomId;
-              res.render(__dirname + '/assets/view/chat', {
-              visibility: 'visible'
-            });
-          }
+          });
+        }else{
+          upper_bound = names.length - 1;
+          lower_bound = 0;
+          req.session.pseudonym = "Professor "+username;
+          res.render(__dirname + '/assets/view/chat', {
+             visibility: 'visible'
+           });
+         }
 
-		    } else {
-			       console.log("NO");
-			          res.sendFile(__dirname + '/assets/view/login.html');
-		    }
+		} else {
+			console.log("NO");
+			res.sendFile(__dirname + '/assets/view/login.html');
+		}
 		});
 });
 
@@ -150,7 +155,7 @@ app.post('/new-room', function(req, res){
 
 });
 
-
+//FIXME: CREATING NEW CHAT ROOM BRINGS IT TO THIS URL. CAN WE MAKE IT SO IT IS CUSTOMIZABLE TO EACH CREATION?
 app.post('/create-room', function(req, res){
 	var name = req.body.chatroomName;
   var code = req.body.code;

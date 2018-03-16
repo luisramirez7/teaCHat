@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="/javascript/index.js"></script>
 
 </head>
+
 <body>
 	<p id="pseudo" style="visibility:hidden;"><%= pseudonym%></p>
 	<p id="code" style="visibility:hidden;"><%= chatroomId%></p>
@@ -33,17 +34,15 @@
 						<textarea class="form-control" id="message"> </textarea>
 						<br />
 						<div class="col-md-4">
-							<input type="submit" class="btn btn-primary" value="Send Message" />
+
 						</div>
+						<input type="submit" class="btn btn-primary send" value="Send Message" />
 					</div>
 				</form>
-
-				<div id="div_upload" class="col-md-8">
-						<form ref='uploadForm' id='uploadForm' action='/upload' method='post' encType="multipart/form-data">
-								<input type="file" name="foo" />
-								<input type='submit' value='Upload!' />
-						</form>
-				</div>
+				<form ref='uploadForm' id='uploadForm' action='/upload' method='post' encType="multipart/form-data">
+						<input type="file" name="foo" multiple>
+						<input type='submit' class = "btn btn-primary" value='Upload!'>
+				</form>
 			</div>
 		</div>
 	</div>
