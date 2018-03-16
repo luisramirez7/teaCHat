@@ -55,8 +55,12 @@ app.get('/register', function(req, res){
 app.use(fileUpload());
 
 app.post('/upload', function(req, res) {
-  console.log(req.files.foo);
-})
+  console.log("Posting!");
+  console.log(res);
+  console.log(req);
+});
+
+
 
 app.post('/submit-register', function(req, res){
 	var email = req.body.email;

@@ -27,7 +27,6 @@
 			</div>
 			<div class="col-md-8">
 				<div class="chat" id="chat"> </div>
-
 				<form id="messageForm">
 					<div class="form-group">
 						<label> Enter Message </label>
@@ -36,17 +35,15 @@
 						<div class="col-md-4">
 							<input type="submit" class="btn btn-primary" value="Send Message" />
 						</div>
-						<div id="div_upload" class="col-md-8">
-								<form ref='uploadForm' id='uploadForm'
-					      action='http://localhost:3000/upload'
-					      method='post'
-					      encType="multipart/form-data">
-						        <input type="file" name="foo" />
-						        <input type='submit' value='Upload!' />
-					    	</form>
-						</div>
 					</div>
 				</form>
+
+				<div id="div_upload" class="col-md-8">
+						<form ref='uploadForm' id='uploadForm' action='/upload' method='post' encType="multipart/form-data">
+								<input type="file" name="foo" />
+								<input type='submit' value='Upload!' />
+						</form>
+				</div>
 			</div>
 		</div>
 	</div>
