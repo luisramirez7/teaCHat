@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+var fileUpload = require('express-fileupload');
 var validateUser = require(__dirname + '/validateuser.js');
 var session = require('client-sessions');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -51,6 +52,12 @@ app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/assets/view/register.html');
 });
 
+app.use(fileUpload());
+
+app.post('/upload', function(req, res) {
+  console.log(req.files.foo);
+})
+
 app.post('/submit-register', function(req, res){
 	var email = req.body.email;
 	var username = req.body.username;
@@ -70,7 +77,7 @@ app.post('/submit-register', function(req, res){
 	}
 
 	if(flag){
-		con.query('INSERT INTO ChatroomUser (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
+		con.query('INSERT INTO User (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
 			if (error) throw error;
 			console.log("Registration successful!");
 			res.sendFile(__dirname + '/assets/view/login.html');
@@ -184,9 +191,9 @@ if (users[code]){
 	//Disconnect
 	socket.on('disconnect', function(data){
 		//if(!socket.username) return;
-		users[code].splice(users[code].indexOf(socket.handshake.query.name), 1);
+		users[code].splice(users[code].indexOf(socket.username), 1);
 		io.to(code).emit('get users', users[code]);
-		connections[code].splice(connections[code].indexOf(socket), 1);
+	connections[code].splice(connections[code].indexOf(socket), 1);
 	});
 
 	//Send Message
