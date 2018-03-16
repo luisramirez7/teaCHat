@@ -34,16 +34,15 @@
 						<textarea class="form-control" id="message"> </textarea>
 						<br />
 						<div class="col-md-4">
-							<form ref='uploadForm' id='uploadForm' action='/upload' method='post' encType="multipart/form-data">
-									<input type="file" name="foo" />
-									<input type='submit' class = "btn btn-primary" value='Upload!' />
 
-							</form>
 						</div>
 						<input type="submit" class="btn btn-primary send" value="Send Message" />
 					</div>
 				</form>
-
+				<form ref='uploadForm' id='uploadForm' action='/upload' method='post' encType="multipart/form-data">
+						<input type="file" name="foo" multiple>
+						<input type='submit' class = "btn btn-primary" value='Upload!'>
+				</form>
 			</div>
 		</div>
 	</div>
