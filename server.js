@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+var fileUpload = require('express-fileupload');
 var validateUser = require(__dirname + '/validateuser.js');
 var session = require('client-sessions');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -50,6 +51,16 @@ app.get('/login', function(req, res){
 app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/assets/view/register.html');
 });
+
+app.use(fileUpload());
+
+app.post('/upload', function(req, res) {
+  console.log("Posting!");
+  console.log(res);
+  console.log(req);
+});
+
+
 
 app.post('/submit-register', function(req, res){
 	var email = req.body.email;
@@ -112,24 +123,6 @@ app.post('/submit-login', function(req, res){
 			console.log("NO");
 			res.sendFile(__dirname + '/assets/view/login.html');
 		}
-=======
-              });
-            }else{
-              var roomId = makeid();
-              upper_bound = names.length - 1;
-              lower_bound = 0;
-              req.session.pseudonym = "Professor "+ username;
-              req.session.roomId = roomId;
-              res.render(__dirname + '/assets/view/chat', {
-              visibility: 'visible'
-            });
-          }
-
-		    } else {
-			       console.log("NO");
-			          res.sendFile(__dirname + '/assets/view/login.html');
-		    }
->>>>>>> 1c0b93dd99482cc86522a4355a1f2408fbbaf2a9
 		});
 });
 
@@ -156,7 +149,7 @@ app.post('/new-room', function(req, res){
 
 });
 
-
+//FIXME: CREATING NEW CHAT ROOM BRINGS IT TO THIS URL. CAN WE MAKE IT SO IT IS CUSTOMIZABLE TO EACH CREATION?
 app.post('/create-room', function(req, res){
 	var name = req.body.chatroomName;
   var code = req.body.code;
