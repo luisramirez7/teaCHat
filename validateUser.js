@@ -2,7 +2,7 @@ module.exports = {
     validUser: function(username, password, con, callback) {
        console.log(username + " " + password);
 		var code = 0;
-		con.query('SELECT * FROM User WHERE Username = ?', [username], function(error, results, fields){
+		con.query('SELECT * FROM ChatroomUser WHERE Username = ?', [username], function(error, results, fields){
 
 			if(error){
 				callback("0");

@@ -6,9 +6,10 @@
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="/javascript/index.js"></script>
+	<script type="text/javascript" src="/javascript/index.js"></script>
 
 </head>
+
 <body>
 	<p id="pseudo" style="visibility:hidden;"><%= pseudonym%></p>
 	<p id="code" style="visibility:hidden;"><%= chatroomId%></p>
@@ -27,15 +28,22 @@
 			</div>
 			<div class="col-md-8">
 				<div class="chat" id="chat"> </div>
-
 				<form id="messageForm">
 					<div class="form-group">
 						<label> Enter Message </label>
 						<textarea class="form-control" id="message"> </textarea>
 						<br />
-						<input type="submit" class="btn btn-primary" value="Send Message" />
+						<div class="col-md-4">
+							<form ref='uploadForm' id='uploadForm' action='/upload' method='post' encType="multipart/form-data">
+									<input type="file" name="foo" />
+									<input type='submit' class = "btn btn-primary" value='Upload!' />
+
+							</form>
+						</div>
+						<input type="submit" class="btn btn-primary send" value="Send Message" />
 					</div>
 				</form>
+
 			</div>
 		</div>
 	</div>

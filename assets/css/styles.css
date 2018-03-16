@@ -3,15 +3,36 @@
 		margin-top: 30px;
 		}
 
+	h3{
+		font-family: Calibri;
+		color: #ff7538;
+	}
+
 	#header{
 		font-family: Calibri;
 		color: #ff7538;
 		font-size: 92px;
 	}
 
+	#homeDisplay{
+		font-family: Calibri;
+		color: #ff7538;
+		font-size: 50px;
+		text-align: center;
+	}
+
+	#roomName{
+		font-family: Calibri;
+		color: #ff7538;
+		font-size: 50px;
+	}
+
 	.btn-primary{
 		font-family: Calibri;
 		background: #ff7538;
+	}
+	.btn-primary.send{
+		float: right;
 	}
 
 
