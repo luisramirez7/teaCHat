@@ -1,0 +1,46 @@
+<html>
+<head>
+	<title>IO Chat</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/styles.css">
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<div id="header">
+			teaCHat
+			<hr>
+		</div>
+		<div id="userFormArea" class="row">
+			<div class="col-md-12 text-center">
+				<div id="error" style="color:red;"> <%=errorCode %> </div>
+				<br />
+				<form id="userForm" method="post" action="/submit-login">
+					<div class="row">
+            			<div class="col-lg-4 col-lg-offset-4">
+               				 <input type="text" class="form-control" name="username" id="username" placeholder="Username" />
+           				 </div>
+       				 </div>
+       				 <br />
+       				 <div class="row">
+            			<div class="col-lg-4 col-lg-offset-4">
+               				 <input type="password" class="form-control" name="password" id="password" placeholder="Password" />
+           				 </div>
+       				 </div>
+       				 <br />
+       				  <div class="row">
+            			<div class="col-lg-4 col-lg-offset-4">
+               				<input type="submit" class="btn btn-primary" value="LOG IN" />
+               				<br /><br />
+       					</div>
+           			  </div>
+				</form>
+				<div id="smallOrange">
+       				Don't have an account? <a href="/register"> Sign up. </a>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
