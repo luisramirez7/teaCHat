@@ -211,9 +211,9 @@ if (users[code]){
 	//Disconnect
 	socket.on('disconnect', function(data){
 		//if(!socket.username) return;
-		users[code].splice(users[code].indexOf(socket.handshake.query.name), 1);
+		users[code].splice(users[code].indexOf(socket.username), 1);
 		io.to(code).emit('get users', users[code]);
-		connections[code].splice(connections[code].indexOf(socket), 1);
+	connections[code].splice(connections[code].indexOf(socket), 1);
 	});
 
 	//Send Message
@@ -274,7 +274,6 @@ if (users[code]){
 			}
 		}
 	});
-
 }
 */
 });

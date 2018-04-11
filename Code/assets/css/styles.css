@@ -31,6 +31,9 @@
 		font-family: Calibri;
 		background: #ff7538;
 	}
+	.btn-primary.send{
+		float: right;
+	}
 
 
 	#smallOrange{
@@ -38,4 +41,3 @@
 		color: #ff7538;
 		font-size: 15px;
 	}
-
