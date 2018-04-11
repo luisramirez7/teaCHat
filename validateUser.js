@@ -8,20 +8,25 @@ module.exports = {
 				callback("0");
 			} else {
 				console.log("IN BUT NOT IN");
+				 var user = {};
 				if(results.length > 0){
 					console.log(results);
 					console.log(results[0].Password + " " + password);
-          var user = {};
+         
 					if(results[0].Password == password){
-            user.valid = 1;
-            user.type = results[0].Type;
+           				user.valid = 1;
+            			user.type = results[0].Type;
 						callback(user);
 						code = 1;
+					} else {
+						user.valid = 2;
+						user.type = "None";
+						callback(user);
 					}
 				} else {
-          user.valid = 2;
-          user.type = "None";
-					callback(user);
+          			user.valid = 2;
+          			user.type = "None";
+          			callback(user);
 				}
 			}
 

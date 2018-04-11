@@ -5,6 +5,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
 var session = require('client-sessions');
+var formidable = require('formidable');
+var popup = require('window-popup').windowPopup;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
@@ -44,7 +46,10 @@ app.set('view engine','ejs');
 
 
 app.get('/login', function(req, res){
-	res.sendFile(__dirname + '/assets/view/login.html');
+	 res.render(__dirname + '/assets/view/login', {
+	 	errorCode: ''
+	 });
+	//res.sendFile(__dirname + '/assets/view/login.html');
 });
 
 app.get('/register', function(req, res){
@@ -110,8 +115,11 @@ app.post('/submit-login', function(req, res){
           }
 
 		    } else {
-			       console.log("NO");
-			          res.sendFile(__dirname + '/assets/view/login.html');
+			    console.log("NO");
+			    
+			    res.render(__dirname + '/assets/view/login', {
+	 				errorCode: 'Username or password is incorrect! Please try again.'
+	 			});
 		    }
 		});
 });
@@ -152,7 +160,6 @@ app.post('/create-room', function(req, res){
     chatroomId : code,
     roomName : name
   });
-
 });
 
 
@@ -161,6 +168,26 @@ app.get('/user-data', function(req, res){
 
 });
 
+app.get('/download', function(req, res){
+	res.download(__dirname + '/assets/uploads/Example_Interview_Questions_2012.pdf');
+})
+
+app.post('/upload', function (req, res){
+    var form = new formidable.IncomingForm();
+    var path;
+
+    form.parse(req);
+
+    form.on('fileBegin', function (name, file){
+        file.path = __dirname + '/assets/uploads/' + file.name;
+        console.log(file.path);
+        res.send({path: file.path, fileName: file.name});
+    });
+
+    form.on('file', function (name, file){
+        console.log('Uploaded ' + file.name);
+    });
+});
 
 io.on('connection', function(socket){
 
@@ -192,6 +219,10 @@ if (users[code]){
 	//Send Message
 	socket.on('send message', function(data){
 		io.to(code).emit('new message', {msg: data.msg, user: data.user});
+	});
+
+	socket.on('send upload', function(data){
+	   io.to(code).emit('new upload', {fileName: data.fileName, user: data.user});
 	});
 
 	// new user
