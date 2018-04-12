@@ -16,6 +16,6 @@
     "formidable": "^1.2.0",
     "express-fileupload": "^0.4.0",
     "mysql": "^2.15.0",
-    "socket.io": "*",
+    "socket.io": "*"
   }
 }

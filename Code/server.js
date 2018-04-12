@@ -6,7 +6,7 @@ var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
 var session = require('client-sessions');
 var formidable = require('formidable');
-var popup = require('window-popup').windowPopup;
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/assets'));
@@ -34,22 +34,20 @@ con.connect(function(err) {
 server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
-
 app.use(session({
-  cookieName: 'session',
-  secret: 'mySession',
-  duration: 30 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000,
+	cookieName: 'session',
+	secret: 'mySession',
+	duration: 30 * 60 * 1000,
+	activeDuration: 5 * 60 * 1000,
 }));
 
 app.set('view engine','ejs');
 
-
+//render login.ejs 
 app.get('/login', function(req, res){
 	 res.render(__dirname + '/assets/view/login', {
 	 	errorCode: ''
 	 });
-	//res.sendFile(__dirname + '/assets/view/login.html');
 });
 
 app.get('/register', function(req, res){
@@ -63,6 +61,8 @@ app.post('/submit-register', function(req, res){
 	var userType = req.body.userType;
 	var type = 0;
 	var authenticationId = req.body.authenticationId;
+
+	//verification number for professor-type registration
 	var verificationNumber = '1234';
 	var flag = true;
 
@@ -84,94 +84,89 @@ app.post('/submit-register', function(req, res){
 });
 
 app.post('/submit-login', function(req, res){
-  req.session.destroy();
+	req.session.destroy();
 	var username = req.body.username;
 	var password = req.body.password;
 
-  		validateUser.validUser(username,password, con, result => {
+  	validateUser.validUser(username,password, con, result => {
 
-			  var isValid = result.valid;
-			  console.log("VALID2 : " + isValid);
-			  if(isValid === 1){
-  			     console.log("YES");
-             console.log(result.type);
-             if(result.type === 0 ){
-  		   //updateUsernames();
-              upper_bound = names.length - 1;
-              lower_bound = 0;
-              req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
-              res.render(__dirname + '/assets/view/chat', {
-              visibility: 'hidden'
-              });
+		var isValid = result.valid;
+		console.log("VALID2 : " + isValid);
+		if(isValid === 1){
+  	    	console.log("YES");
+       		console.log(result.type);
+           	if(result.type === 0 ){
+  		   		//updateUsernames();
+			    upper_bound = names.length - 1;
+			    lower_bound = 0;
+			    req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+			    res.render(__dirname + '/assets/view/chat', {
+			    visibility: 'hidden'
+			    });
             }else{
-              var roomId = makeid();
-              upper_bound = names.length - 1;
-              lower_bound = 0;
-              req.session.pseudonym = "Professor "+ username;
-              req.session.roomId = roomId;
-              res.render(__dirname + '/assets/view/chat', {
-              visibility: 'visible'
-            });
-          }
-
-		    } else {
-			    console.log("NO");
-			    
-			    res.render(__dirname + '/assets/view/login', {
-	 				errorCode: 'Username or password is incorrect! Please try again.'
-	 			});
-		    }
-		});
+      			var roomId = makeid();
+              	upper_bound = names.length - 1;
+              	lower_bound = 0;
+              	req.session.pseudonym = "Professor "+ username;
+              	req.session.roomId = roomId;
+              	res.render(__dirname + '/assets/view/chat', {
+             		visibility: 'visible'
+            	});
+          	}
+	 	} else {
+			console.log("NO");
+			res.render(__dirname + '/assets/view/login', {
+	 			errorCode: 'Username or password is incorrect! Please try again.'
+	 		});
+		}
+	});
 });
 
 function makeid() {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	var text = "";
+  	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < 5; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return text;
+  	for (var i = 0; i < 5; i++)
+    	text += possible.charAt(Math.floor(Math.random() * possible.length));
+	
+	return text;
 }
 
 app.post('/new-room', function(req, res){
 	var code = req.body.chatroomCode;
-  console.log(chatrooms.indexOf(code));
-  if(chatrooms.indexOf(code) != -1 ){
-  res.render(__dirname + '/assets/view/chatroom',{
-    pseudonym : req.session.pseudonym,
-    chatroomId : code,
-    roomName : chatroomName[code]
-  });
-}
+  	console.log(chatrooms.indexOf(code));
+  	
+  	if(chatrooms.indexOf(code) != -1 ){
+  		res.render(__dirname + '/assets/view/chatroom',{
+    		pseudonym : req.session.pseudonym,
+    		chatroomId : code,
+    		roomName : chatroomName[code]
+  		});
+	}
 
 });
 
 
 app.post('/create-room', function(req, res){
 	var name = req.body.chatroomName;
-  var code = req.body.code;
-  chatrooms.push(code);
-  chatroomName[code] = name;
-  console.log('new room!');
-  req.session.code = code;
-  res.render(__dirname + '/assets/view/chatroom',{
-    pseudonym : req.session.pseudonym,
-    chatroomId : code,
-    roomName : name
-  });
+  	var code = req.body.code;
+  	chatrooms.push(code);
+  	chatroomName[code] = name;
+  	console.log('new room!');
+  	req.session.code = code;
+  	res.render(__dirname + '/assets/view/chatroom',{
+    	pseudonym : req.session.pseudonym,
+    	chatroomId : code,
+    	roomName : name
+  	});
 });
 
 
 app.get('/user-data', function(req, res){
-  res.json({ name: "example" });
-
+	res.json({ name: "example" });
 });
 
-app.get('/download', function(req, res){
-	res.download(__dirname + '/assets/uploads/Example_Interview_Questions_2012.pdf');
-})
-
+//file upload
 app.post('/upload', function (req, res){
     var form = new formidable.IncomingForm();
     var path;
@@ -179,41 +174,48 @@ app.post('/upload', function (req, res){
     form.parse(req);
 
     form.on('fileBegin', function (name, file){
-        file.path = __dirname + '/assets/uploads/' + file.name;
-        console.log(file.path);
-        res.send({path: file.path, fileName: file.name});
+    	if(file.name != ""){
+	        file.path = __dirname + '/assets/uploads/' + file.name;
+	        res.send({path: file.path, fileName: file.name});
+    	} else {
+    		res.send({error: 1});
+    	}
     });
 
     form.on('file', function (name, file){
-        console.log('Uploaded ' + file.name);
+    	if(file.name != ""){
+	        console.log('Uploaded ' + file.name);
+    	} else {
+    		console.log("Upload failed");
+    	}      
     });
 });
 
 io.on('connection', function(socket){
 
-var handshakeData = socket.request;
-var code = socket.handshake.query.code;
+	var handshakeData = socket.request;
+	var code = socket.handshake.query.code;
 
-socket.join(code);
-if (connections[code]){
-	connections[code].push(socket);
-}else{
-  connections[code] = [socket];
-}
+	socket.join(code);
+	if (connections[code]){
+		connections[code].push(socket);
+	}else{
+  		connections[code] = [socket];
+	}
 
-if (users[code]){
-	users[code].push(socket.handshake.query.name);
-}else{
-  users[code] = [socket.handshake.query.name];
-}
+	if (users[code]){
+		users[code].push(socket.handshake.query.name);
+	}else{
+  		users[code] = [socket.handshake.query.name];
+	}
 
-  io.to(code).emit('get users', users[code]);
+  	io.to(code).emit('get users', users[code]);
 	//Disconnect
 	socket.on('disconnect', function(data){
 		//if(!socket.username) return;
-		users[code].splice(users[code].indexOf(socket.username), 1);
+		users[code].splice(users[code].indexOf(socket.handshake.query.name), 1);
 		io.to(code).emit('get users', users[code]);
-	connections[code].splice(connections[code].indexOf(socket), 1);
+		connections[code].splice(connections[code].indexOf(socket), 1);
 	});
 
 	//Send Message
@@ -221,59 +223,8 @@ if (users[code]){
 		io.to(code).emit('new message', {msg: data.msg, user: data.user});
 	});
 
+	//Send file uploads
 	socket.on('send upload', function(data){
-	   io.to(code).emit('new upload', {fileName: data.fileName, user: data.user});
+	   io.to(code).emit('new upload', {filePath: __dirname, fileName: data.fileName, user: data.user});
 	});
-
-	// new user
-	//  socket.on('new user', function(data, callback){
-  //
-	// 	var isValid = 0;
-	// 	socket.username = data.username;
-	// 	socket.password = data.password;
-	// 	validateUser.validUser(socket.username, socket.password, con, result => {
-	// 		var isValid = result;
-	// 		console.log("VALID2 : " + isValid);
-	// 		if(isValid === 1){
-	// 		console.log("YES");
-	// 		callback('/chat');
-	// 		console.log(data.username);
-	// 		console.log(data.password);
-	// 		users.push(socket.username);
-	// 		updateUsernames();
-	// 	} else {
-	// 		console.log("NO");
-	// 		callback(false);
-	// 	}
-	// 	});
-	// })
-
-
-
-/*
-	const validUser = (username, password, callback) => {
-	console.log(username + " " + password);
-	var code = 0;
-	con.query('SELECT Password FROM User WHERE Username = ?', [username], function(error, results, fields){
-
-
-		if(error){
-			callback("0");
-		} else {
-			console.log("IN BUT NOT IN");
-			if(results.length > 0){
-				console.log(results);
-				console.log(results[0].Password + " " + password);
-				if(results[0].Password == password){
-					callback(1);
-					code = 1;
-				}
-			} else {
-				callback(2);
-
-			}
-		}
-	});
-}
-*/
 });
