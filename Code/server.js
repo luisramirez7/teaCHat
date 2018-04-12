@@ -15,8 +15,10 @@ var users = {};
 var connections = {};
 var chatrooms = [];
 var chatroomName = {};
-var names = ["Panda", "Squirrell", "Potato","Chicken","Nothin","Monkey"];
-
+var names = ["Alligator", "Anteater", "Armadillo", "Auroch", "Axolotl", "Badger", "Bat", "Beaver", "Buffalo", "Camel", "Chameleon", "Cheetah", "Chipmunk", "Chinchilla", "Chupacabra", "Cormorant", "Coyote", "Crow", "Dingo" ,
+"Dinosaur",  "Dog", "Dolphin", "Dragon", "Duck", "Elephant", "Ferret", "Fox", "Frog", "Giraffe", "Gopher", "Grizzly", "Hedgehog", "Hippo", "Hyena", "Jackal", "Ibex", "Ifrit", "Iguana", "Kangaroo",
+"Koala", "Kraken", "Lemur", "Leopard", "Liger", "Lion", "Llama", "Manatee", "Mink", "Monkey", "Moose", "Narwhal", "Nyan Cat", "Orangutan", "Otter", "Panda", "Penguin", "Platypus", "Python", "Pumpkin",
+"Quagga", "Rabbit", "Raccoon", "Rhino", "Sheep", "Shrew", "Skunk", "Slow Loris", "Squirrel", "Tiger", "Turtle", "Walrus", "Wolf", "Wolverine", "Wombat"];
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
@@ -43,7 +45,7 @@ app.use(session({
 
 app.set('view engine','ejs');
 
-//render login.ejs 
+//render login.ejs
 app.get('/login', function(req, res){
 	 res.render(__dirname + '/assets/view/login', {
 	 	errorCode: ''
@@ -128,14 +130,14 @@ function makeid() {
 
   	for (var i = 0; i < 5; i++)
     	text += possible.charAt(Math.floor(Math.random() * possible.length));
-	
+
 	return text;
 }
 
 app.post('/new-room', function(req, res){
 	var code = req.body.chatroomCode;
   	console.log(chatrooms.indexOf(code));
-  	
+
   	if(chatrooms.indexOf(code) != -1 ){
   		res.render(__dirname + '/assets/view/chatroom',{
     		pseudonym : req.session.pseudonym,
@@ -187,7 +189,7 @@ app.post('/upload', function (req, res){
 	        console.log('Uploaded ' + file.name);
     	} else {
     		console.log("Upload failed");
-    	}      
+    	}
     });
 });
 
