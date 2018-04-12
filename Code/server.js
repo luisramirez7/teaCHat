@@ -27,6 +27,60 @@ var con = mysql.createConnection({
   password: "B2g-Jp",
   database : "otiong"
 });
+//training
+const filter = require('spam-filter')('fisher');
+const newMessages = [
+  ['Thank , professor.', 'good'],
+  ['How do I do this?.', 'good'],
+  ['I have a question', 'good'],
+  ['This was very helpful', 'good'],
+  ['Here is the answer', 'good'],
+  ['Why did  do this?', 'good'],
+  ['Help','good'],
+  ['Can  say that again?','good'],
+  ['How did  get that?','good'],
+  ['Thanks','good'],
+  ['nice','good'],
+  ['Wow! That is cool!','good'],
+  ['wow...','bad'],
+  ['Trololololol.', 'bad'],
+  ['This shit is stupid', 'bad'],
+  ['Wow, that is stupid', 'bad'],
+  ['You\'re a bad professor', 'bad'],
+  ['THIS IS LAME', 'bad'],
+  ['Wtf', 'bad'],
+  ['check out my twitter', 'bad'],
+  ['check out my snapchat', 'bad'],
+  ['check out my linkedin', 'bad'],
+  ['check out my channel', 'bad'],
+  ['gtfo','bad'],
+  ['lmao','bad'],
+  ['Fuck ', 'bad'],
+  ['FUCK', 'bad'],
+  ['Fuckwad','bad'],
+  ['FUCK', 'bad'],
+  ['Fuck...','bad'],
+  ['Fuck em', 'bad'],
+  ['What the fuck', 'bad'],
+  ['Fuck', 'bad'],
+  ['Oh shit', 'bad'],
+  ['GADAMMIT', 'bad']
+]
+filter.empty()
+newMessages.forEach(function (newMessage) {
+  console.log(newMessage[0],newMessage[1]);
+  filter.train(newMessage[0], newMessage[1])
+})
+filter.setMinimum('bad', 0.65).save()
+//classifying
+function filterAndTrain(message){
+  console.log(filter.classify(message));
+  if(filter.classify(message)=='none'){
+
+    filter.train(message, 'good').save()
+  }
+  return filter.isSpam(message)
+}
 
 con.connect(function(err) {
   if (err) throw err;
@@ -222,7 +276,14 @@ io.on('connection', function(socket){
 
 	//Send Message
 	socket.on('send message', function(data){
-		io.to(code).emit('new message', {msg: data.msg, user: data.user});
+    if(filterAndTrain(data.msg)){
+      (io.to(code).emit('new message', {msg: "Message has been filtered. Profanity and any insults are not allowed.", user: data.user}));
+      console.log("It is bad");
+    }
+    else{
+      (io.to(code).emit('new message', {msg: data.msg, user: data.user}));
+      console.log("it is good");
+    }
 	});
 
 	//Send file uploads
