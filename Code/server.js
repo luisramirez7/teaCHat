@@ -73,7 +73,6 @@ const newMessages = [
 ]
 filter.empty()
 newMessages.forEach(function (newMessage) {
-  console.log(newMessage[0],newMessage[1]);
   filter.train(newMessage[0], newMessage[1])
 })
 filter.setMinimum('bad', 0.65).save()
