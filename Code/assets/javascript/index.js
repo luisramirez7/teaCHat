@@ -1,3 +1,6 @@
+var messages = [];
+
+
 $(function(){
 			var socket = io.connect({
 				query:{
@@ -49,6 +52,7 @@ $(function(){
 			});
 
 			socket.on('new message', function(data){
+				messages.push(data.user+" : "+data.msg);
 				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
 			});
 
@@ -61,4 +65,17 @@ $(function(){
 				console.log(html);
 				$users.html(html);
 			})
+});
+
+$(document).ready(function() {
+	$("#saveButton").on('click',function(e) {
+			var email = $('#email').val();
+			$.post( "/email-chat", {email:email,msg:messages},function( data ) {
+			  if(data == 1 || data == 0){
+					alert('The Messages have been sent to your email!');
+				}else{
+					alert('Unable to send email. Please check your internet connection');
+				}
+			});
+	});
 });

@@ -6,6 +6,7 @@ var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
 var session = require('client-sessions');
 var formidable = require('formidable');
+var nodemailer = require('nodemailer');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -43,7 +44,7 @@ app.use(session({
 
 app.set('view engine','ejs');
 
-//render login.ejs 
+//render login.ejs
 app.get('/login', function(req, res){
 	 res.render(__dirname + '/assets/view/login', {
 	 	errorCode: ''
@@ -104,11 +105,9 @@ app.post('/submit-login', function(req, res){
 			    visibility: 'hidden'
 			    });
             }else{
-      			var roomId = makeid();
               	upper_bound = names.length - 1;
               	lower_bound = 0;
               	req.session.pseudonym = "Professor "+ username;
-              	req.session.roomId = roomId;
               	res.render(__dirname + '/assets/view/chat', {
              		visibility: 'visible'
             	});
@@ -122,25 +121,49 @@ app.post('/submit-login', function(req, res){
 	});
 });
 
-function makeid() {
-	var text = "";
-  	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//for sending emails to user
+function sendEmail(sender,recipient,title,content) {
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'tempmail464@gmail.com',
+      pass: 'jiayehvinay'
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+  });
 
-  	for (var i = 0; i < 5; i++)
-    	text += possible.charAt(Math.floor(Math.random() * possible.length));
-	
-	return text;
-}
+  var mailOptions = {
+    from: sender,
+    to: recipient,
+    subject: title,
+    text: content
+  };
+
+  var response = transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+      var sent =  false;
+    } else {
+      console.log('Email sent: ' + info.response);
+      var sent =  true;
+    }
+  return sent;
+  });
+  return response;
+};
 
 app.post('/new-room', function(req, res){
 	var code = req.body.chatroomCode;
   	console.log(chatrooms.indexOf(code));
-  	
+
   	if(chatrooms.indexOf(code) != -1 ){
   		res.render(__dirname + '/assets/view/chatroom',{
     		pseudonym : req.session.pseudonym,
     		chatroomId : code,
-    		roomName : chatroomName[code]
+    		roomName : chatroomName[code],
+        visibility : 'hidden'
   		});
 	}
 
@@ -157,8 +180,33 @@ app.post('/create-room', function(req, res){
   	res.render(__dirname + '/assets/view/chatroom',{
     	pseudonym : req.session.pseudonym,
     	chatroomId : code,
-    	roomName : name
+    	roomName : name,
+      visibility : 'visible'
   	});
+});
+
+
+app.post('/email-chat', function(req, res){
+	var email = req.body.email;
+  var data = req.body.msg;
+  message = "Dear Instructor, \n\nHere are the messages from today's class: \n\n";
+
+if (typeof data != 'undefined'){
+
+ for (var i = 0; i < data.length; i++) {
+    message = message + data[i] + "\n";
+    //Do something
+  }
+
+}
+  message = message + "\nRegards,\nteaCHat team"
+  var sent = sendEmail("support@teaCHat.com",email,"Chat Room Content",message);
+  console.log(sent);
+  if(sent){
+    res.send('1');
+  }else{
+    res.send('0');
+  }
 });
 
 
@@ -187,7 +235,7 @@ app.post('/upload', function (req, res){
 	        console.log('Uploaded ' + file.name);
     	} else {
     		console.log("Upload failed");
-    	}      
+    	}
     });
 });
 
