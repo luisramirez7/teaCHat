@@ -282,11 +282,9 @@ io.on('connection', function(socket){
 	socket.on('send message', function(data){
     if(filterAndTrain(data.msg)){
       (io.to(code).emit('new message', {msg: "Message has been filtered. Profanity and any insults are not allowed.", user: data.user}));
-      console.log("It is bad");
     }
     else{
       (io.to(code).emit('new message', {msg: data.msg, user: data.user}));
-      console.log("it is good");
     }
 	});
 
