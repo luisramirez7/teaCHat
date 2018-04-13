@@ -42,6 +42,8 @@ const newMessages = [
   ['Thanks','good'],
   ['nice','good'],
   ['Wow! That is cool!','good'],
+  ['Check my work, please!', 'good'],
+  ['Can check this', 'good'],
   ['wow...','bad'],
   ['Trololololol.', 'bad'],
   ['This shit is stupid', 'bad'],
@@ -49,10 +51,11 @@ const newMessages = [
   ['You\'re a bad professor', 'bad'],
   ['THIS IS LAME', 'bad'],
   ['Wtf', 'bad'],
-  ['check out my twitter', 'bad'],
-  ['check out my snapchat', 'bad'],
-  ['check out my linkedin', 'bad'],
-  ['check out my channel', 'bad'],
+  ['twitter', 'bad'],
+  ['snapchat', 'bad'],
+  ['linkedin', 'bad'],
+  ['channel', 'bad'],
+  ['so hai', 'bad'],
   ['gtfo','bad'],
   ['lmao','bad'],
   ['Fuck ', 'bad'],
@@ -64,7 +67,9 @@ const newMessages = [
   ['What the fuck', 'bad'],
   ['Fuck', 'bad'],
   ['Oh shit', 'bad'],
-  ['GADAMMIT', 'bad']
+  ['GADAMMIT', 'bad'],
+  ['suck','bad'],
+  ['dick','bad']
 ]
 filter.empty()
 newMessages.forEach(function (newMessage) {
