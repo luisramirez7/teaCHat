@@ -43,15 +43,22 @@ app.use(session({
 
 app.set('view engine','ejs');
 
-//render login.ejs 
+//render login.ejs
 app.get('/login', function(req, res){
 	 res.render(__dirname + '/assets/view/login', {
 	 	errorCode: ''
 	 });
 });
 
+
 app.get('/register', function(req, res){
 	res.sendFile(__dirname + '/assets/view/register.html');
+});
+
+app.get('register', function(req, res){
+  res.render(__dirname + '/assets/view/register',{
+    errorCode: ''
+  });
 });
 
 app.post('/submit-register', function(req, res){
@@ -66,7 +73,7 @@ app.post('/submit-register', function(req, res){
 	var verificationNumber = '1234';
 	var flag = true;
 
-	if(userType == 'professor' && authenticationId == verificationNumber){
+  if(userType == 'professor' && authenticationId == verificationNumber){
 		type = 1;
 	} else if(userType == "professor" && authenticationId != verificationNumber){
 		console.log("Registration failed");
@@ -74,13 +81,31 @@ app.post('/submit-register', function(req, res){
 		flag = false;
 	}
 
-	if(flag){
-		con.query('INSERT INTO ChatroomUser (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
-			if (error) throw error;
-			console.log("Registration successful!");
-			res.sendFile(__dirname + '/assets/view/login.html');
-		});
-	}
+  validateUser.valideUsername(username, con, result => {
+    var isValid = result.valid;
+    if(isValid === 1){
+      console.log("username in use");
+      res.render(__dirname + '/assets/view/register', {
+	 			errorCode: 'Username is already in use. Please choose another Username.'
+	 		});
+      }else{
+
+
+      //  if(flag){
+          con.query('INSERT INTO ChatroomUser (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
+            if (error) throw error;
+            console.log("Registration successful!");
+            res.sendFile(__dirname + '/assets/view/login.html');
+          });
+      //  }
+}
+
+  });
+
+
+
+
+
 });
 
 app.post('/submit-login', function(req, res){
@@ -103,7 +128,7 @@ app.post('/submit-login', function(req, res){
 			    res.render(__dirname + '/assets/view/chat', {
 			    visibility: 'hidden'
 			    });
-            }else{
+        }else{
       			var roomId = makeid();
               	upper_bound = names.length - 1;
               	lower_bound = 0;
@@ -128,14 +153,14 @@ function makeid() {
 
   	for (var i = 0; i < 5; i++)
     	text += possible.charAt(Math.floor(Math.random() * possible.length));
-	
+
 	return text;
 }
 
 app.post('/new-room', function(req, res){
 	var code = req.body.chatroomCode;
   	console.log(chatrooms.indexOf(code));
-  	
+
   	if(chatrooms.indexOf(code) != -1 ){
   		res.render(__dirname + '/assets/view/chatroom',{
     		pseudonym : req.session.pseudonym,
@@ -187,7 +212,7 @@ app.post('/upload', function (req, res){
 	        console.log('Uploaded ' + file.name);
     	} else {
     		console.log("Upload failed");
-    	}      
+    	}
     });
 });
 
