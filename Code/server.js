@@ -16,6 +16,7 @@ var users = {};
 var connections = {};
 var chatrooms = [];
 var chatroomName = {};
+var userNames = [];
 var names = ["Alligator", "Anteater", "Armadillo", "Auroch", "Axolotl", "Badger", "Bat", "Beaver", "Buffalo", "Camel", "Chameleon", "Cheetah", "Chipmunk", "Chinchilla", "Chupacabra", "Cormorant", "Coyote", "Crow", "Dingo" ,
 "Dinosaur",  "Dog", "Dolphin", "Dragon", "Duck", "Elephant", "Ferret", "Fox", "Frog", "Giraffe", "Gopher", "Grizzly", "Hedgehog", "Hippo", "Hyena", "Jackal", "Ibex", "Ifrit", "Iguana", "Kangaroo",
 "Koala", "Kraken", "Lemur", "Leopard", "Liger", "Lion", "Llama", "Manatee", "Mink", "Monkey", "Moose", "Narwhal", "Nyan Cat", "Orangutan", "Otter", "Panda", "Penguin", "Platypus", "Python", "Pumpkin",
@@ -158,12 +159,21 @@ app.post('/submit-login', function(req, res){
        		console.log(result.type);
            	if(result.type === 0 ){
   		   		//updateUsernames();
-			    upper_bound = names.length - 1;
-			    lower_bound = 0;
-			    req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
-			    res.render(__dirname + '/assets/view/chat', {
-			    visibility: 'hidden'
-			    });
+    			    upper_bound = names.length - 1;
+    			    lower_bound = 0;
+
+              //Unique username
+              var tempUsername = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+
+              while(userNames.indexOf(tempUsername) > -1){
+                  tempUsername = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+              }
+    			    req.session.pseudonym = tempUsername;
+              userNames.push(tempUsername);
+
+              res.render(__dirname + '/assets/view/chat', {
+    			    visibility: 'hidden'
+    			    });
             }else{
               	upper_bound = names.length - 1;
               	lower_bound = 0;
