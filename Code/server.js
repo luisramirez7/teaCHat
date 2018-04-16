@@ -6,6 +6,7 @@ var io = require('socket.io').listen(server);
 var validateUser = require(__dirname + '/validateuser.js');
 var session = require('client-sessions');
 var formidable = require('formidable');
+var nodemailer = require('nodemailer');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -15,8 +16,11 @@ var users = {};
 var connections = {};
 var chatrooms = [];
 var chatroomName = {};
-var names = ["Panda", "Squirrell", "Potato","Chicken","Nothin","Monkey"];
-
+var userNames = [];
+var names = ["Alligator", "Anteater", "Armadillo", "Auroch", "Axolotl", "Badger", "Bat", "Beaver", "Buffalo", "Camel", "Chameleon", "Cheetah", "Chipmunk", "Chinchilla", "Chupacabra", "Cormorant", "Coyote", "Crow", "Dingo" ,
+"Dinosaur",  "Dog", "Dolphin", "Dragon", "Duck", "Elephant", "Ferret", "Fox", "Frog", "Giraffe", "Gopher", "Grizzly", "Hedgehog", "Hippo", "Hyena", "Jackal", "Ibex", "Ifrit", "Iguana", "Kangaroo",
+"Koala", "Kraken", "Lemur", "Leopard", "Liger", "Lion", "Llama", "Manatee", "Mink", "Monkey", "Moose", "Narwhal", "Nyan Cat", "Orangutan", "Otter", "Panda", "Penguin", "Platypus", "Python", "Pumpkin",
+"Quagga", "Rabbit", "Raccoon", "Rhino", "Sheep", "Shrew", "Skunk", "Slow Loris", "Squirrel", "Tiger", "Turtle", "Walrus", "Wolf", "Wolverine", "Wombat"];
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
@@ -25,6 +29,64 @@ var con = mysql.createConnection({
   password: "B2g-Jp",
   database : "otiong"
 });
+//training
+const filter = require('spam-filter')('fisher');
+const newMessages = [
+  ['Thank , professor.', 'good'],
+  ['How do I do this?.', 'good'],
+  ['I have a question', 'good'],
+  ['This was very helpful', 'good'],
+  ['Here is the answer', 'good'],
+  ['Why did  do this?', 'good'],
+  ['Help','good'],
+  ['Can  say that again?','good'],
+  ['How did  get that?','good'],
+  ['Thanks','good'],
+  ['nice','good'],
+  ['Wow! That is cool!','good'],
+  ['Check my work, please!', 'good'],
+  ['Can check this', 'good'],
+  ['wow...','bad'],
+  ['Trololololol.', 'bad'],
+  ['This shit is stupid', 'bad'],
+  ['Wow, that is stupid', 'bad'],
+  ['You\'re a bad professor', 'bad'],
+  ['THIS IS LAME', 'bad'],
+  ['Wtf', 'bad'],
+  ['twitter', 'bad'],
+  ['snapchat', 'bad'],
+  ['linkedin', 'bad'],
+  ['channel', 'bad'],
+  ['so hai', 'bad'],
+  ['gtfo','bad'],
+  ['lmao','bad'],
+  ['Fuck ', 'bad'],
+  ['FUCK', 'bad'],
+  ['Fuckwad','bad'],
+  ['FUCK', 'bad'],
+  ['Fuck...','bad'],
+  ['Fuck em', 'bad'],
+  ['What the fuck', 'bad'],
+  ['Fuck', 'bad'],
+  ['Oh shit', 'bad'],
+  ['GADAMMIT', 'bad'],
+  ['suck','bad'],
+  ['dick','bad']
+]
+filter.empty()
+newMessages.forEach(function (newMessage) {
+  filter.train(newMessage[0], newMessage[1])
+})
+filter.setMinimum('bad', 0.65).save()
+//classifying
+function filterAndTrain(message){
+  console.log(filter.classify(message));
+  if(filter.classify(message)=='none'){
+
+    filter.train(message, 'good').save()
+  }
+  return filter.isSpam(message)
+}
 
 con.connect(function(err) {
   if (err) throw err;
@@ -122,18 +184,25 @@ app.post('/submit-login', function(req, res){
        		console.log(result.type);
            	if(result.type === 0 ){
   		   		//updateUsernames();
-			    upper_bound = names.length - 1;
-			    lower_bound = 0;
-			    req.session.pseudonym = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
-			    res.render(__dirname + '/assets/view/chat', {
-			    visibility: 'hidden'
-			    });
-        }else{
-      			var roomId = makeid();
+    			    upper_bound = names.length - 1;
+    			    lower_bound = 0;
+
+              //Unique username
+              var tempUsername = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+
+              while(userNames.indexOf(tempUsername) > -1){
+                  tempUsername = "Anonymous "+names[Math.floor(Math.random()*(upper_bound - lower_bound) + lower_bound)];
+              }
+    			    req.session.pseudonym = tempUsername;
+              userNames.push(tempUsername);
+
+              res.render(__dirname + '/assets/view/chat', {
+    			    visibility: 'hidden'
+    			    });
+            }else{
               	upper_bound = names.length - 1;
               	lower_bound = 0;
               	req.session.pseudonym = "Professor "+ username;
-              	req.session.roomId = roomId;
               	res.render(__dirname + '/assets/view/chat', {
              		visibility: 'visible'
             	});
@@ -156,6 +225,38 @@ function makeid() {
 
 	return text;
 }
+//for sending emails to user
+function sendEmail(sender,recipient,title,content) {
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'tempmail464@gmail.com',
+      pass: 'jiayehvinay'
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+  });
+
+  var mailOptions = {
+    from: sender,
+    to: recipient,
+    subject: title,
+    text: content
+  };
+
+  var response = transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+      var sent =  false;
+    } else {
+      console.log('Email sent: ' + info.response);
+      var sent =  true;
+    }
+  return sent;
+  });
+  return response;
+};
 
 app.post('/new-room', function(req, res){
 	var code = req.body.chatroomCode;
@@ -165,7 +266,8 @@ app.post('/new-room', function(req, res){
   		res.render(__dirname + '/assets/view/chatroom',{
     		pseudonym : req.session.pseudonym,
     		chatroomId : code,
-    		roomName : chatroomName[code]
+    		roomName : chatroomName[code],
+        visibility : 'hidden'
   		});
 	}
 
@@ -182,8 +284,33 @@ app.post('/create-room', function(req, res){
   	res.render(__dirname + '/assets/view/chatroom',{
     	pseudonym : req.session.pseudonym,
     	chatroomId : code,
-    	roomName : name
+    	roomName : name,
+      visibility : 'visible'
   	});
+});
+
+
+app.post('/email-chat', function(req, res){
+	var email = req.body.email;
+  var data = req.body.msg;
+  message = "Dear Instructor, \n\nHere are the messages from today's class: \n\n";
+
+if (typeof data != 'undefined'){
+
+ for (var i = 0; i < data.length; i++) {
+    message = message + data[i] + "\n";
+    //Do something
+  }
+
+}
+  message = message + "\nRegards,\nteaCHat team"
+  var sent = sendEmail("support@teaCHat.com",email,"Chat Room Content",message);
+  console.log(sent);
+  if(sent){
+    res.send('1');
+  }else{
+    res.send('0');
+  }
 });
 
 
@@ -245,7 +372,12 @@ io.on('connection', function(socket){
 
 	//Send Message
 	socket.on('send message', function(data){
-		io.to(code).emit('new message', {msg: data.msg, user: data.user});
+    if(filterAndTrain(data.msg)){
+      (io.to(code).emit('new message', {msg: "Message has been filtered. Profanity and any insults are not allowed.", user: data.user}));
+    }
+    else{
+      (io.to(code).emit('new message', {msg: data.msg, user: data.user}));
+    }
 	});
 
 	//Send file uploads

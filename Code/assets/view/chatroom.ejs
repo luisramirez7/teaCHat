@@ -1,13 +1,22 @@
 <html>
 <head>
 	<title>IO Chat</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<link rel="stylesheet" href="/css/styles.css">
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"><script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+
+ <link rel="stylesheet" href="/css/styles.css">
+ <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+ <script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+ <script src="/socket.io/socket.io.js"></script>
+
 	<script type="text/javascript" src="/javascript/index.js"></script>
 
+	<style>
+		#exportChat {visibility: <%= visibility %> ;}
+	</style>
 </head>
 <body>
 	<p id="pseudo" style="visibility:hidden;"><%= pseudonym%></p>
@@ -35,6 +44,9 @@
 						<br />
 						<div class="col-md-4">
 							<input type="submit" class="btn btn-primary" value="Send Message" />
+							<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal" id = "exportChat">
+								Save Chat
+							</button>
 						</div>
 					</div>
 				</form>
@@ -48,4 +60,30 @@
 		</div>
 	</div>
 </body>
+<footer>
+		<!-- Modal -->
+		<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel">Export Messages</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+					<center>
+		      <div class="modal-body .col-md-3 .ml-auto">
+
+							<label> Email Address </label> <br>
+							<input type="text" id="email" name="email" />
+							<br>
+						</br>
+						<button type="button" id = "saveButton" class="btn btn-success">Send</button>
+
+		      </div>
+				</center>
+		    </div>
+		  </div>
+		</div>
+</footer>
 </html>
