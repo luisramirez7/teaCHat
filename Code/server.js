@@ -16,8 +16,10 @@ var users = {};
 var connections = {};
 var chatrooms = [];
 var chatroomName = {};
-var names = ["Panda", "Squirrell", "Potato","Chicken","Nothin","Monkey"];
-
+var names = ["Alligator", "Anteater", "Armadillo", "Auroch", "Axolotl", "Badger", "Bat", "Beaver", "Buffalo", "Camel", "Chameleon", "Cheetah", "Chipmunk", "Chinchilla", "Chupacabra", "Cormorant", "Coyote", "Crow", "Dingo" ,
+"Dinosaur",  "Dog", "Dolphin", "Dragon", "Duck", "Elephant", "Ferret", "Fox", "Frog", "Giraffe", "Gopher", "Grizzly", "Hedgehog", "Hippo", "Hyena", "Jackal", "Ibex", "Ifrit", "Iguana", "Kangaroo",
+"Koala", "Kraken", "Lemur", "Leopard", "Liger", "Lion", "Llama", "Manatee", "Mink", "Monkey", "Moose", "Narwhal", "Nyan Cat", "Orangutan", "Otter", "Panda", "Penguin", "Platypus", "Python", "Pumpkin",
+"Quagga", "Rabbit", "Raccoon", "Rhino", "Sheep", "Shrew", "Skunk", "Slow Loris", "Squirrel", "Tiger", "Turtle", "Walrus", "Wolf", "Wolverine", "Wombat"];
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
@@ -26,6 +28,64 @@ var con = mysql.createConnection({
   password: "B2g-Jp",
   database : "otiong"
 });
+//training
+const filter = require('spam-filter')('fisher');
+const newMessages = [
+  ['Thank , professor.', 'good'],
+  ['How do I do this?.', 'good'],
+  ['I have a question', 'good'],
+  ['This was very helpful', 'good'],
+  ['Here is the answer', 'good'],
+  ['Why did  do this?', 'good'],
+  ['Help','good'],
+  ['Can  say that again?','good'],
+  ['How did  get that?','good'],
+  ['Thanks','good'],
+  ['nice','good'],
+  ['Wow! That is cool!','good'],
+  ['Check my work, please!', 'good'],
+  ['Can check this', 'good'],
+  ['wow...','bad'],
+  ['Trololololol.', 'bad'],
+  ['This shit is stupid', 'bad'],
+  ['Wow, that is stupid', 'bad'],
+  ['You\'re a bad professor', 'bad'],
+  ['THIS IS LAME', 'bad'],
+  ['Wtf', 'bad'],
+  ['twitter', 'bad'],
+  ['snapchat', 'bad'],
+  ['linkedin', 'bad'],
+  ['channel', 'bad'],
+  ['so hai', 'bad'],
+  ['gtfo','bad'],
+  ['lmao','bad'],
+  ['Fuck ', 'bad'],
+  ['FUCK', 'bad'],
+  ['Fuckwad','bad'],
+  ['FUCK', 'bad'],
+  ['Fuck...','bad'],
+  ['Fuck em', 'bad'],
+  ['What the fuck', 'bad'],
+  ['Fuck', 'bad'],
+  ['Oh shit', 'bad'],
+  ['GADAMMIT', 'bad'],
+  ['suck','bad'],
+  ['dick','bad']
+]
+filter.empty()
+newMessages.forEach(function (newMessage) {
+  filter.train(newMessage[0], newMessage[1])
+})
+filter.setMinimum('bad', 0.65).save()
+//classifying
+function filterAndTrain(message){
+  console.log(filter.classify(message));
+  if(filter.classify(message)=='none'){
+
+    filter.train(message, 'good').save()
+  }
+  return filter.isSpam(message)
+}
 
 con.connect(function(err) {
   if (err) throw err;
@@ -121,6 +181,15 @@ app.post('/submit-login', function(req, res){
 	});
 });
 
+function makeid() {
+	var text = "";
+  	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  	for (var i = 0; i < 5; i++)
+    	text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+	return text;
+}
 //for sending emails to user
 function sendEmail(sender,recipient,title,content) {
   var transporter = nodemailer.createTransport({
@@ -268,7 +337,12 @@ io.on('connection', function(socket){
 
 	//Send Message
 	socket.on('send message', function(data){
-		io.to(code).emit('new message', {msg: data.msg, user: data.user});
+    if(filterAndTrain(data.msg)){
+      (io.to(code).emit('new message', {msg: "Message has been filtered. Profanity and any insults are not allowed.", user: data.user}));
+    }
+    else{
+      (io.to(code).emit('new message', {msg: data.msg, user: data.user}));
+    }
 	});
 
 	//Send file uploads
