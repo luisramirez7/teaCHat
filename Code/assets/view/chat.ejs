@@ -12,18 +12,41 @@
 	<script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
-	function do_something(){
-	   // Do your stuff here
-		 var text = "";
-		 var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-		 for (var i = 0; i < 5; i++){
-			 text += possible.charAt(Math.floor(Math.random() * possible.length));
-		 }
-		 $('input[name="code"]').val(text);
-		 $("#codeDisplay").html(text);
-	}
-</script>
+		function do_something(){
+		   // Do your stuff here
+			 var text = "";
+			 var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+			 var codeArray = [];
+
+			 for (var i = 0; i < 5; i++){
+				 text += possible.charAt(Math.floor(Math.random() * possible.length));
+			 }
+			 
+			 codeArray.push(text)
+
+			 for(var j = 0; j < codeArray.length; j++){
+			 	if (codeArray[j] == text && codeArray.length > 1) {
+			 		var newCode = "";
+			 		
+			 		for (var i = 0; i < 5; i++){
+				 		newCode += possible.charAt(Math.floor(Math.random() * possible.length));
+			 		}
+
+			 		text = newCode;
+
+			 		codeArray.push(text);
+			 		$('input[name="code"]').val(text);	
+			 		$("#codeDisplay").html(text);	 		
+			 	} else {
+			 		$('input[name="code"]').val(text);
+			 		$("#codeDisplay").html(text);
+			 	}
+			 }
+
+
+		}
+	</script>
 
 	<style>
 		#newRoomButton {visibility: <%= visibility %> ;}
@@ -101,7 +124,7 @@
 					</br>
 
 						<input type="submit" class="btn btn-primary" value="Create Room" />
-					</form>
+			</form>
 
 	      </div>
 			</center>
