@@ -29,36 +29,53 @@
 		<div class="row" id="messageArea">
 			<div class="col-md-4">
 				<div class="well">
-					<h3> <%=roomName %> </h3>
-					<h3> Online Users </h3>
+					<h3> Online Users in <%=roomName %></h3>
 					<ul class="list-group" id="users"></ul>
 				</div>
 			</div>
 			<div class="col-md-8">
 				<div class="chat" id="chat"> </div>
-
-				<form id="messageForm">
+				<br>
+				
 					<div class="form-group">
-						<label> Enter Message </label>
-						<textarea class="form-control" id="message"> </textarea>
-						<br />
-						<div class="col-md-4">
-							<input type="submit" class="btn btn-primary" value="Send Message" />
-							<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal" id = "exportChat">
-								Save Chat
-							</button>
-						</div>
+						<textarea class="form-control" id="message" placeholder="Enter Message"></textarea>
 					</div>
-				</form>
-				<br><br><br>
-				<form name="uploadFile" id="uploadFile" enctype="multipart/form-data" method="post">
-					<label> Upload files </label> <br><br>
-    				<input type="file" name="upload" multiple> <br>
-    				<input type="submit" class="btn btn-primary" value="Upload">
-				</form>
+					<form id="messageForm">
+						<div class="col-md-4">
+							<input type="submit" class="btn btn-primary" value="Send Message" /> <br><br>	
+						</div>
+					</form>
+				
+					<a href="#moreOptions" data-toggle="collapse"> Advanced Options </a>
+						<div id='moreOptions' class="collapse">
+							<br>
+							<div class='col-md-8' id="uploadFileDisplay">
+									<label> <h3> File Upload </h3> </label> <br> 
+								<form name="uploadFile" id="uploadFile" enctype="multipart/form-data" method="post">
+									
+				    				<input type="file" name="upload" multiple> <br>
+				    				<input type="submit" class="btn btn-primary" value="Upload">
+								</form>
+							</div>
+							<div class= 'col-md-3' id='saveChatDisplay'>
+								<label> <h3> Save Chat </h3> </label>
+				    			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal" id = "exportChat">
+									Save Chat
+								</button>
+							</div>
+						</div>				
+				
 			</div>
 		</div>
 	</div>
+
+	<br><br><br><br><br><br><br><br><br>
+	<form action="/logout" id="logoutForm" class='logout' method="post">
+		<input type="submit" class="btn btn-primary logout" value="Logout">
+	</form>
+	<form action="/chatHome" id="logoutForm" class='logout' method="post">
+		<input type="submit" class="btn btn-primary back" value="Back">
+	</form>
 </body>
 <footer>
 		<!-- Modal -->

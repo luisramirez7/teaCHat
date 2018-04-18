@@ -1,4 +1,5 @@
 module.exports = {
+    //Checks for username and password in the DB
     validUser: function(username, password, con, callback) {
        console.log(username + " " + password);
 		var code = 0;
@@ -31,10 +32,10 @@ module.exports = {
 			}
 
 		});
-  }
-};
-module.exports = {
-    valideUsername: function(username, con, callback) {
+  },
+
+    //Checks if the username exists in DB
+    validUsername: function(username, con, callback) {
        console.log(username);
     var code = 0;
     con.query('SELECT * FROM ChatroomUser WHERE Username = ?', [username], function(error, results, fields){

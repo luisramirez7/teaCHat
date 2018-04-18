@@ -48,12 +48,17 @@ $(function(){
 			});
 
 			socket.on('new upload', function(data){
-				$chat.append('<div class="well"><strong>'+ data.user +' uploaded</strong> ' + data.fileName +' <br> <a href="'+ data.filePath +'\\assets\\uploads\\'+data.fileName+'" download>Download '+data.fileName+'</a> </div>');
+				messages.push(data.user+" uploaded "+data.fileName);
+				$chat.append('<div class="well"><strong>'+ data.user +' uploaded</strong> ' + data.fileName +' <br> <a href="..\\uploads\\'+data.fileName+'" download>Download '+data.fileName+'</a> </div>');
 			});
 
 			socket.on('new message', function(data){
 				messages.push(data.user+" : "+data.msg);
-				$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
+				if(data.filteredMsg === 1){
+					$chat.append('<div class="well"><strong>'+ data.user +'</strong>: <font color="red">' + data.msg +'</font> </div>');
+				} else {
+					$chat.append('<div class="well"><strong>'+ data.user +'</strong>: ' + data.msg +'</div>');
+				}
 			});
 
 			socket.on('get users', function(data){

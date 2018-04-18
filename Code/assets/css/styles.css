@@ -41,3 +41,23 @@
 		color: #ff7538;
 		font-size: 15px;
 	}
+
+	#uploadFileDisplay, #saveChatDisplay {
+    display: inline-block; /* or inline */
+	}
+
+	.logout, .btn.btn-primary.logout {
+    display: inline-block; /* or inline */
+	}
+
+	.logout{
+    float: right;
+    margin-right: 150px;
+    font-size: 30px;
+	}
+
+	.btn.btn-primary.back{
+		float: right;
+    	margin-right: 350px;
+    	font-size: 30px;
+	}

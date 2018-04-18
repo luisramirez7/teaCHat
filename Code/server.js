@@ -3,7 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var validateUser = require(__dirname + '/validateuser.js');
+var validateUser = require(__dirname + '/validateUser.js');
 var session = require('client-sessions');
 var formidable = require('formidable');
 var nodemailer = require('nodemailer');
@@ -108,13 +108,17 @@ app.set('view engine','ejs');
 //render login.ejs
 app.get('/login', function(req, res){
 	 res.render(__dirname + '/assets/view/login', {
-	 	errorCode: ''
+	 	errorCode: '',
+    successCode: ''
 	 });
 });
 
-
-app.get('/register', function(req, res){
-	res.sendFile(__dirname + '/assets/view/register.html');
+app.post('/logout', function(req, res){
+  req.session.destroy();
+  res.render(__dirname + '/assets/view/login', {
+    errorCode: '',
+    successCode: ''
+  });
 });
 
 app.get('register', function(req, res){
@@ -143,7 +147,7 @@ app.post('/submit-register', function(req, res){
 		flag = false;
 	}
 
-  validateUser.valideUsername(username, con, result => {
+  validateUser.validUsername(username, con, result => {
     var isValid = result.valid;
     if(isValid === 1){
       console.log("username in use");
@@ -157,21 +161,30 @@ app.post('/submit-register', function(req, res){
           con.query('INSERT INTO ChatroomUser (EmailAddress, Type, Username, Password) VALUES (?,?,?,?)', [email, type, username, password], function(error, result){
             if (error) throw error;
             console.log("Registration successful!");
-            res.sendFile(__dirname + '/assets/view/login.html');
+            res.render(__dirname + '/assets/view/login', {
+              errorCode: '',
+              successCode: 'Registration successful!'
+            });
           });
       //  }
-}
+        }
 
   });
+});
 
-
-
-
-
+app.post('/chatHome', function(req, res){
+  if(req.session.pseudonym.includes("Anonymous")){
+    res.render(__dirname + '/assets/view/chat', {
+      visibility: 'hidden'
+    });
+  } else {
+    res.render(__dirname + '/assets/view/chat', {
+      visibility: 'visible'
+    });
+  }
 });
 
 app.post('/submit-login', function(req, res){
-	req.session.destroy();
 	var username = req.body.username;
 	var password = req.body.password;
 
@@ -210,8 +223,9 @@ app.post('/submit-login', function(req, res){
 	 	} else {
 			console.log("NO");
 			res.render(__dirname + '/assets/view/login', {
-	 			errorCode: 'Username or password is incorrect! Please try again.'
-	 		});
+	 			errorCode: 'Username or password is incorrect! Please try again.',
+	 		  successCode: ''
+      });
 		}
 	});
 });
@@ -261,7 +275,6 @@ function sendEmail(sender,recipient,title,content) {
 app.post('/new-room', function(req, res){
 	var code = req.body.chatroomCode;
   	console.log(chatrooms.indexOf(code));
-
   	if(chatrooms.indexOf(code) != -1 ){
   		res.render(__dirname + '/assets/view/chatroom',{
     		pseudonym : req.session.pseudonym,
@@ -373,7 +386,7 @@ io.on('connection', function(socket){
 	//Send Message
 	socket.on('send message', function(data){
     if(filterAndTrain(data.msg)){
-      (io.to(code).emit('new message', {msg: "Message has been filtered. Profanity and any insults are not allowed.", user: data.user}));
+      (io.to(code).emit('new message', {msg: "Message has been filtered. Profanity and any insults are not allowed.", user: data.user, filteredMsg: 1}));
     }
     else{
       (io.to(code).emit('new message', {msg: data.msg, user: data.user}));

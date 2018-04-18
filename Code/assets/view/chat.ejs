@@ -7,8 +7,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-
-
 	<link rel="stylesheet" href="/css/styles.css">
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
@@ -72,11 +70,15 @@
 			</div>
 		</div>
 	</div>
-
+	<br><br><br><br><br><br><br><br><br>
+	<form action="/logout" id="logoutForm" method="post">
+		<input type="submit" class="btn btn-primary logout" value="Logout">
+	</form>
 
 </body>
 
 <footer>
+			
 	<!-- Modal -->
 	<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	  <div class="modal-dialog" role="document">
@@ -93,7 +95,7 @@
 	        <form method="post" action="create-room" id="myform">
 						<label> Chatroom Name </label> <br>
 						<input type="hidden" name="code" value=""/>
-						<input type="text" name="chatroomName" />
+						<input required type="text" id="chatroomName" name="chatroomName" />
 						<br>
 						Code: <h6 id="codeDisplay"></h6>
 					</br>
