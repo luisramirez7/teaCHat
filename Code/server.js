@@ -121,7 +121,7 @@ app.post('/logout', function(req, res){
   });
 });
 
-app.get('register', function(req, res){
+app.get('/register', function(req, res){
   res.render(__dirname + '/assets/view/register',{
     errorCode: ''
   });
