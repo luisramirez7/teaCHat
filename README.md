@@ -5,7 +5,7 @@ Computer Science Project 361
 * Clone the repository using `git clone`
 * `cd` into the project folder and run `npm install`
 * Run `node server` to spin up the server
-* Visit `localhost:3000` to start chatting!
+* Visit `localhost:3000/login` to login and register to start chatting!
 
 ## Technologies
 * Node.js
