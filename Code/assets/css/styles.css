@@ -42,7 +42,7 @@
 		font-size: 15px;
 	}
 
-	#uploadFileDisplay, #saveChatDisplay {
+	#uploadFileDisplay, #exportChat {
     display: inline-block; /* or inline */
 	}
 
